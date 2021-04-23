@@ -1,0 +1,25 @@
+body {
+  background-image: url('media/splash.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#main {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+#main * {
+  margin: 5px;
+}
+
+h1 {
+  font-size: 80px;
+  margin: 5px;
+  text-shadow: 3px 3px 0 rgb(134, 57, 230);
+}

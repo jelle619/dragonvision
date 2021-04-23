@@ -1,0 +1,68 @@
+/* Import font */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+h1, h2, h3, h4, h5, h6, p, span, a {
+  font-family: 'Roboto', sans-serif;
+  color: white;
+}
+
+/* Body */
+
+body {
+  background-color: purple;
+  margin: 0;
+}
+
+/* Navigation */
+
+#nav {
+  position: sticky;
+  width: 80%;
+  display: flex;
+  background: rgba(184, 97, 250, 0.5);
+  overflow-x: auto;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0 0 10px 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 5px black;
+}
+
+@supports (not backdrop-filter: blur(10px)) or (not webkit-backdrop-filter: blur(10px)) {
+  #nav {
+    background: rgb(184, 97, 250);
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  #nav {
+    width: 98%;
+  }
+}
+
+#nav * {
+  justify-content: center;
+  flex-shrink: 0;
+  display: block;
+  padding: 20px;
+  color: white;
+}
+
+#nav *:first-child {
+  margin-left: auto;
+}
+
+#nav *:last-child {
+  margin-right: auto;
+}
+
+/* Main */
+
+#main {
+  padding: 25px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 900px;
+}
