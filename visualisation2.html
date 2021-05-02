@@ -22,6 +22,30 @@
     <p>A powerful, yet gorgeous visualisation.</p>
   </div>
 
+  <div id="visual"></div>
+  <script>
+
+    //variables
+    var width = 400
+    var height = 400
+    var pos = 200
+    var len1 = 180
+    var len2 = 230
+
+    //creating the SVG element
+    var svg = d3.select("#visual")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+
+    //creating the rectangle
+    svg.append("rect")
+    .attr("x", pos)
+    .attr("y", pos)
+    .attr("width", len1)
+    .attr("height", len2)
+    .attr("fill", "red")
+   </script> 
   <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
 </body>
 </html>
