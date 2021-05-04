@@ -23,7 +23,30 @@
     <h1>Visualisation 1</h1>
     <p>IT'S ALIIIVE! 🔥🐲<br>The visual below is made using D3.</p>
 
+    <input type="file" id="input" accept=".csv, .txt"> <!-- HTML iput, user can select a file here. -->
+
+    <script>
+      document.getElementById('input').addEventListener('change', function selectedFileChanged() {
+        if (this.files.length === 0) { // This statement will be true when the user cancels out of the upload dialog.
+          console.log('No file selected.'); // Log to the console that the user has selected no file.
+          return; // Exit the function, no need to do anything
+        }
+
+        const reader = new FileReader();
+        reader.onload = function fileReadCompleted() {
+          // when the reader is done, the content is in reader.result.
+          console.log(reader.result);
+          document.getElementById('result').innerHTML = reader.result;
+        };
+        // we will tell reader to interpret the file as text, so reader.result will be text also
+        reader.readAsText(this.files[0]);
+      });
+    </script>
+
+    <p style="display: block; background: white; color: black;" id="result"></p>
+
     <div id="visual"></div>
+
     <script>
 
       // create the svg area
@@ -33,7 +56,7 @@
           .attr("height", 440)
         .append("g")
           .attr("transform", "translate(220,220)")
-      
+
       // create input data: a square matrix that provides flow between entities
       var matrix = [
         [11975,  5871, 8916, 2868],
@@ -41,13 +64,13 @@
         [ 8010, 16145, 8090, 8045],
         [ 1013,   990,  940, 6907]
       ];
-      
+
       // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
       var res = d3.chord()
           .padAngle(0.05)     // padding between entities (black arc)
           .sortSubgroups(d3.descending)
           (matrix)
-      
+
       // add the groups on the inner part of the circle
       svg
         .datum(res)
@@ -63,7 +86,7 @@
             .innerRadius(200)
             .outerRadius(210)
           )
-      
+
       // Add the links between groups
       svg
         .datum(res)
@@ -77,7 +100,7 @@
           )
           .style("fill", "#69b3a2")
           .style("stroke", "black");
-      
+
       </script>
   </div>
 
