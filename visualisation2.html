@@ -22,16 +22,32 @@
     <p>A powerful, yet gorgeous visualisation.</p>
   </div>
 
+  <p id="debug"> </p>
+
   <div id="visual"></div>
   <script>
 
     //variables
-    var width = 400
+    var width = 800
     var height = 400
-    var pos = 300
+    var posx =300
+    var posy = 100
     var len1 = 180
     var len2 = 230
 
+    // Test data for the matrix
+
+    d3.select("debug").text("Debug")
+
+    // d3.csv("file:///C:/Users/20200820/Documents/GitHub/2IOA0/data/enron_sample.csv", function(data) {
+    //    console.log(data);
+    // });
+    
+
+    //for (var i=0; i<=data.nodes.length; i++){
+      //data.nodes[i] = "mail" + i + "@testmail.com"
+    //}
+    
     //creating the SVG element
     var svg = d3.select("#visual")
     .append("svg")
@@ -40,8 +56,8 @@
 
     //creating the rectangle
     svg.append("rect")
-    .attr("x", pos)
-    .attr("y", pos)
+    .attr("x", posx)
+    .attr("y", posy)
     .attr("width", len1)
     .attr("height", len2)
     .attr("fill", "red")
