@@ -63,5 +63,45 @@
     .attr("fill", "red")
    </script> 
   <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
+
+<div id = "visual"></div>
+
+<script>
+
+  var maildata = [
+    {
+      "date" : new Date ('2000-08-13'),
+      "fromId" : 96,
+      "fromEmail": 'matthew.lenhart@enron.com',
+      "fromJobtitle": "Employee",
+      "toId" : 77,
+      "fromEmail": 'eric.bass@enron.com',
+      "fromJobtitle": "Trader",
+      "messageType": "CC",
+      "sentiment": 0.01369863
+
+    }
+  ];
+
+  for (var i = 0; i<100; i++){
+    var m = {
+      "date" : new Date ('2000-08-13'),
+      "fromId" : i,
+      "fromEmail": 'mail' + i + '@enron.com',
+      "fromJobtitle": "Employee",
+      "toId" : i + 10,
+      "fromEmail": 'mail' + i + '@enron.com',
+      "fromJobtitle": "Trader",
+      "messageType": "CC",
+      "sentiment": 0
+    }
+
+    maildata.push(m)
+  }
+
+  for (var i = 0; i<maildata.length; i++) {
+    console.log("maildata [" + i + ']=' + maildata[i].date + ',' + maildata[i].fromId + " " + maildata[i].fromEmail)
+  }
+</script>
 </body>
 </html>
