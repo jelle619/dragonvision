@@ -22,86 +22,104 @@
     <p>A powerful, yet gorgeous visualisation.</p>
   </div>
 
-  <p id="debug"> </p>
-
-  <div id="visual"></div>
-  <script>
-
-    //variables
-    var width = 800
-    var height = 400
-    var posx =300
-    var posy = 100
-    var len1 = 180
-    var len2 = 230
-
-    // Test data for the matrix
-
-    d3.select("debug").text("Debug")
-
-    // d3.csv("file:///C:/Users/20200820/Documents/GitHub/2IOA0/data/enron_sample.csv", function(data) {
-    //    console.log(data);
-    // });
-    
-
-    //for (var i=0; i<=data.nodes.length; i++){
-      //data.nodes[i] = "mail" + i + "@testmail.com"
-    //}
-    
-    //creating the SVG element
-    var svg = d3.select("#visual")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-
-    //creating the rectangle
-    svg.append("rect")
-    .attr("x", posx)
-    .attr("y", posy)
-    .attr("width", len1)
-    .attr("height", len2)
-    .attr("fill", "red")
-   </script> 
   <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
 
-<div id = "visual"></div>
+  <div id="visual"></div>
 
-<script>
+  <script>
+      // Initialize test data
+      var maildata = [
+        {
+          "date" : new Date('2000-08-13'),
+          "fromId" :  96,
+          "fromEmail" : "matthew.lenhart@enron.com",
+          "fromJobtitle" : "Employee",
+          "toId" : 77,
+          "toEmail" : "eric.bass@enron.com",
+          "toJobtitle" : "Trader",  
+          "messageType" : "CC", 
+          "sentiment" : 0.01369863
+        },
+        {
+          "date" : new Date('2001-11-22'),
+          "fromId" :  64,
+          "fromEmail" : "danny.mccarty@enron.com",
+          "fromJobtitle" : "Vice President",
+          "toId" : 121,
+          "toEmail" : "rod.hayslett@enron.com",
+          "toJobtitle" : "Vice President",  
+          "messageType" : "TO", 
+          "sentiment" : 0
+        }
+      ];
 
-  var maildata = [
-    {
-      "date" : new Date ('2000-08-13'),
-      "fromId" : 96,
-      "fromEmail": 'matthew.lenhart@enron.com',
-      "fromJobtitle": "Employee",
-      "toId" : 77,
-      "fromEmail": 'eric.bass@enron.com',
-      "fromJobtitle": "Trader",
-      "messageType": "CC",
-      "sentiment": 0.01369863
+      var empCnt = 150
+      for (var i = 0; i<empCnt; i++) {
+        var m = {
+          "date" : new Date('2000-08-13'),
+          "fromId" :  i,
+          "fromEmail" : "mail" + i + "@enron.com",
+          "fromJobtitle" : "Employee",
+          "toId" : i+10,
+          "toEmail" : "mail" + (empCnt - i - 1) + "@enron.com",
+          "toJobtitle" : "Trader",  
+          "messageType" : "CC", 
+          "sentiment" : 0
+        }
 
-    }
-  ];
+        maildata.push(m)
+      }
 
-  for (var i = 0; i<100; i++){
-    var m = {
-      "date" : new Date ('2000-08-13'),
-      "fromId" : i,
-      "fromEmail": 'mail' + i + '@enron.com',
-      "fromJobtitle": "Employee",
-      "toId" : i + 10,
-      "fromEmail": 'mail' + i + '@enron.com',
-      "fromJobtitle": "Trader",
-      "messageType": "CC",
-      "sentiment": 0
-    }
+      for (var i = 0; i<maildata.length; i++) {
+        console.log("maildata[" + i + "]=" + maildata[i].date + ", " + maildata[i].fromEmail + ", " + maildata[i].toEmail)
+      }
 
-    maildata.push(m)
-  }
+  
+      // Dimenstions
+      const width = 954;
+      const radius = width / 2;
 
-  for (var i = 0; i<maildata.length; i++) {
-    console.log("maildata [" + i + ']=' + maildata[i].date + ',' + maildata[i].fromId + " " + maildata[i].fromEmail)
-  }
-</script>
+      // Transform data into hierarchy
+      var rollupData = d3.rollup(maildata, v => v.length, d => d.fromJobtitle, d => d.fromEmail);
+      console.log(rollupData.size, rollupData);
+      var hierarchyData = d3.hierarchy(rollupData);
+      console.log(hierarchyData);
+      var root = d3.cluster()
+          .size([2 * Math.PI, radius - 100])(hierarchyData);
+      console.log(root);
+
+      // const svg = d3.create("svg")
+      //  .attr("viewBox", [-width / 2, -width / 2, width, width]);
+      var svg = d3.select("#visual")
+        .append("svg")
+        .attr("viewBox", [-width / 2, -width / 2, width, width]);
+
+      const node = svg.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "6")
+        .attr("font-weight", "normal")
+        .attr("fill", "white")
+        .selectAll("g")
+        .data(root.leaves())
+        .join("g")
+          .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+        .append("text")
+          .attr("dy", "0.31em")
+          .attr("x", d => d.x < Math.PI ? 6 : -6)
+          .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+          .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+          .text( d => d.data[0])
+          .call(text => text.append("title")
+            .text(d => "job  : " + d.parent.data[0] + "\n"
+                     + "mail : " + d.data[0]
+          //     ${d.outgoing.length} outgoing
+          //     ${d.incoming.length} incoming`
+            )
+          )
+      ;
+      
+  </script>
+
+
 </body>
 </html>
