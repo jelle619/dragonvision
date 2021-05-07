@@ -23,5 +23,169 @@
   </div>
 
   <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
+
+  <div id="visual"></div>
+
+  <script>
+      // Initialize test data
+      var maildata = [
+        {
+          "date" : new Date('2000-08-13'),
+          "fromId" :  96,
+          "fromEmail" : "matthew.lenhart@enron.com",
+          "fromJobtitle" : "Employee",
+          "toId" : 77,
+          "toEmail" : "eric.bass@enron.com",
+          "toJobtitle" : "Trader",  
+          "messageType" : "CC", 
+          "sentiment" : 0.01369863
+        },
+        {
+          "date" : new Date('2001-11-22'),
+          "fromId" :  64,
+          "fromEmail" : "danny.mccarty@enron.com",
+          "fromJobtitle" : "Vice President",
+          "toId" : 121,
+          "toEmail" : "rod.hayslett@enron.com",
+          "toJobtitle" : "Vice President",  
+          "messageType" : "TO", 
+          "sentiment" : 0
+        }
+      ];
+
+      var empCnt = 150
+      for (var i = 0; i<empCnt; i++) {
+        var jobFrom = "Employee";
+        var jobTo = "Employee";
+        var res = i%3;
+        if (res == 0){
+          jobFrom = "Trader"
+        } else if (res == 1){
+          jobFrom = "Manager"
+        }
+
+        res = (empCnt - i - 1)%2;
+        if (res == 0){
+          jobTo = "Trader"
+        } else if (res == 1){
+          jobTo= "Manager"
+        }
+
+        var m = {
+          "date" : new Date('2000-08-1' + i%3),
+          "fromId" :  i,
+          "fromEmail" : "mail" + i + "@enron.com",
+          "fromJobtitle" : jobFrom,
+          "toId" : i+10,
+          "toEmail" : "mail" + (empCnt - i - 1) + "@enron.com",
+          "toJobtitle" : jobTo, 
+          "messageType" : "CC", 
+          "sentiment" : 0
+        }
+
+        maildata.push(m)
+      }
+      
+      //  Debug
+      for (var i = 0; i<maildata.length; i++) {
+        console.log("maildata[" + i + "]=" + maildata[i].fromJobtitle + ", " + maildata[i].fromEmail + ", " + maildata[i].toJobtitle + ", " + maildata[i].toEmail)
+      } 
+
+  
+      // Dimenstions
+      const width = 954;
+      const radius = width / 2;
+
+      // Transform data into hierarchy
+      //  Test rollup data
+      // var rollupData = d3.rollup(maildata, v => v.length, d => d.fromJobtitle, d => d.fromEmail);
+      // console.log(rollupData.size, rollupData);
+
+      //  Test group data
+      //var groupFrom =  d3.group(maildata, d => d.fromJobtitle, d => d.fromEmail);
+      //console.log(groupFrom.size, groupFrom);
+      // var groupTo =  d3.group(maildata, d => d.toJobtitle, d => d.toEmail);
+      // console.log(groupTo.size, groupTo);
+
+      // var groupAll = new Map([...groupFrom, ...groupTo]);
+      // console.log(groupAll.size, groupAll, groupAll.has("Trader"), groupAll.has("danny.mccarty@enron.com"));
+
+      //  use custom function generateMap
+      var groupAll = generateMap(maildata);
+      console.log(groupAll.size, groupAll);  // Debug      
+
+      var hierarchyData = d3.hierarchy(groupAll);
+      console.log(hierarchyData);     // Debug
+
+      var root = d3.cluster()
+          .size([2 * Math.PI, radius - 100])(hierarchyData);
+      console.log(root);      // Debug
+
+      // Svg
+      var svg = d3.select("#visual")
+        .append("svg")
+        .attr("viewBox", [-width / 2, -width / 2, width, width]);
+   
+      const node = svg.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "8")
+        .attr("font-weight", "normal")
+        .attr("fill", "white")
+        .selectAll("g")
+        .data(root.leaves())
+        .join("g")
+          .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+        .append("text")
+          .attr("dy", "0.31em")
+          .attr("x", d => d.x < Math.PI ? 6 : -6)
+          .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+          .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+          .text( d => d.data[0])
+          .call(text => text.append("title")
+            .text(d => "job  : " + d.parent.data[0] + "\n"
+                     + "mail : " + d.data[0] + "\n"
+                     + "outgoing : " + d.data[1].cntOut + "\n"
+                     + "incoming : " + d.data[1].cntIn + "\n"
+
+            )
+          )
+      ;
+
+function generateMap(data) {
+  // Transforms array of objects data (maildata) into map     
+  var map = new Map;
+  data.forEach(function find(data) {         
+    // Add from 
+    if (!map.has(data.fromJobtitle)) {
+      map.set(data.fromJobtitle, new Map());      
+    } 
+
+    var p = map.get(data.fromJobtitle);
+    if (!p.has(data.fromEmail)) {
+      p.set(data.fromEmail, {"email" : data.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkOut" : new Array()})
+    } 
+
+    var q = p.get(data.fromEmail);
+    q.cntOut += 1;
+    q.linkOut.push(data);
+    
+    // Add to 
+    if (!map.has(data.toJobtitle)) {
+      map.set(data.toJobtitle, new Map());      
+    } 
+
+    p = map.get(data.toJobtitle);
+    if (!p.has(data.toEmail)) {
+      p.set(data.toEmail, {"email" : data.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkOut" : new Array()})
+    }
+    var q = p.get(data.toEmail);
+    q.cntIn += 1;
+  });
+  return map;
+}
+      
+  </script>
+
+
 </body>
 </html>
