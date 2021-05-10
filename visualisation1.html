@@ -8,6 +8,7 @@
   <title>Dragon Vision — Visualisation 1</title>
   <link rel="stylesheet" type="text/css" href="css/global.css" media="screen" /> <!-- import global stylesheet -->
   <script src="https://d3js.org/d3.v6.min.js"></script> <!-- import D3.js, version 6 -->
+  <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script> <!-- import Papa Parse, version 5 -->
 </head>
 
 <body>
@@ -23,25 +24,68 @@
     <h1>Visualisation 1</h1>
     <p>IT'S ALIIIVE! 🔥🐲<br>The visual below is made using D3.</p>
 
-    <input type="file" id="input" accept=".csv, .txt"> <!-- HTML iput, user can select a file here. -->
+    <input type="file" id="input" accept=".csv"> <!-- HTML iput, user can select a file here. -->
+
 
     <script>
-      document.getElementById('input').addEventListener('change', function selectedFileChanged() {
+      document.getElementById('input').addEventListener('change', function selectedFileChanged() { // when the state of the HTML input changes (a file gets selected), this function will trigger
         if (this.files.length === 0) { // This statement will be true when the user cancels out of the upload dialog.
           console.log('No file selected.'); // Log to the console that the user has selected no file.
           return; // Exit the function, no need to do anything
         }
 
+        // create the file object
+
+        var file = this.files[0]; // this variable will contain the file object, with this.files[0] = document.getElementById('input').files[0]
+
+        // printing CSV to the console
+
         const reader = new FileReader();
-        reader.onload = function fileReadCompleted() {
-          // when the reader is done, the content is in reader.result.
-          console.log(reader.result);
-          document.getElementById('result').innerHTML = reader.result;
+        reader.onload = function fileReadCompleted() { // when the reader is done, the content is in reader.result.
+          console.log("CSV input:", reader); // print the CSV input in the console
         };
-        // we will tell reader to interpret the file as text, so reader.result will be text also
-        reader.readAsText(this.files[0]);
+        reader.readAsText(file); // we will tell reader to interpret the file as text, so reader.result will be text also
+
+        // parsing the CSV into JSON using Papa Parse
+
+        var config = { // we will define the config that Papa Parse is going to use
+	        delimiter: "",	// auto-detect
+	        newline: "",	// auto-detect
+	        quoteChar: '"',
+	        escapeChar: '"',
+	        header: false,
+	        transformHeader: undefined,
+	        dynamicTyping: false,
+	        preview: 0,
+	        encoding: "",
+	        worker: false,
+	        comments: false,
+	        step: undefined,
+	        complete: undefined,
+	        error: undefined,
+	        download: false,
+	        downloadRequestHeaders: undefined,
+	        downloadRequestBody: undefined,
+	        skipEmptyLines: false,
+	        chunk: undefined,
+	        chunkSize: undefined,
+	        fastMode: undefined,
+	        beforeFirstChunk: undefined,
+	        withCredentials: undefined,
+	        transform: undefined,
+	        delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+        };
+
+        Papa.parse(file, {
+	         complete: function(results) {
+		           console.log("JSON output:", results);
+	            }
+            });
+
       });
     </script>
+
+
 
     <p style="display: block; background: white; color: black;" id="result"></p>
 
