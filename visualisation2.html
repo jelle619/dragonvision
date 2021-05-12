@@ -20,11 +20,112 @@
   <div id='main'>
     <h1>Visualisation 2</h1>
     <p>A powerful, yet gorgeous visualisation.</p>
+ 
+ <style>
+.btn-group button {
+  background-color: #CC0099; /* Background */
+  border: 1px solid indigo; /* Border */
+  color: white; /* White text */
+  padding: 10px 24px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+  float: left; /* Float the buttons side by side */
+}
+
+.btn-group button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Add a background color on hover */
+.btn-group button:hover {
+  background-color: #9900b2;
+}
+
+.btn-group button:active {
+  transform: scale(0.98);
+  /* Scaling button to 0.98 to its original size */
+  box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+  /* Lowering the shadow */
+}
+</style>
+
+<div class="btn-group" style="width:100%">
+  <button style="width:25%">All</button>
+  <button style="width:25%">Year</button>
+  <button style="width:25%">Month</button>
+  <button style="width:25%">Day</button>
+</div>
+
+ <p> </p>
+
+<style>
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: url('/media/dragonhead.png');
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: url('/media/dragonhead.png');
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="slidecontainer">
+  <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+  <p>Value: <span id="demo"></span></p>
+</div>
+
+<script>
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
+</script>
+
   </div>
 
   <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
 
-  <div id="visual"></div>
+    <div id="visual"></div>
 
   <script>
 // =====================================================    
@@ -438,4 +539,3 @@ function bilink(root) {
 
 </body>
 </html>
-
