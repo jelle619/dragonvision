@@ -365,7 +365,7 @@ function path([source, target]) {
       // console.log(groupAll.size, groupAll, groupAll.has("Trader"), groupAll.has("danny.mccarty@enron.com"));
 
       //  use custom function generateMap
-      var groupAll = generateMap(maildata);
+      var groupAll = generateMap(maildata, "Day", new Date('2000-08-11'));
       console.log(groupAll.size, groupAll);  // Debug      
 
       var hierarchyData = d3.hierarchy(groupAll)
@@ -508,35 +508,58 @@ function path([source, target]) {
   }
 
 
-function generateMap(data) {
+function generateMap(data, filterDateBy = "All", dateFilter) {
+
+  var filterDateFn;
+  switch(filterDateBy) {
+    case "All": 
+      filterDateFn = date => true;   
+      break;
+    case "Year":
+      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear());
+      break;
+    case "Month":
+      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear() && date.getMonth() == dateFilter.getMonth());
+      break;
+    case "Day": 
+      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear() && date.getMonth() == dateFilter.getMonth() && date.getDay() == dateFilter.getDay());
+      break;
+    
+  }
+
   // Transforms array of objects data (maildata) into map     
   var map = new Map;
-  data.forEach(function find(data) {         
+  data.forEach(function find(dataEl) {         
     // Add from 
-    if (!map.has(data.fromJobtitle)) {
-      map.set(data.fromJobtitle, new Map());      
+    if (!map.has(dataEl.fromJobtitle)) {
+      map.set(dataEl.fromJobtitle, new Map());      
     } 
 
-    var p = map.get(data.fromJobtitle);
-    if (!p.has(data.fromEmail)) {
-      p.set(data.fromEmail, {"email" : data.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkIn": new Array(), "linkOut": new Array(), "mailOut" : new Array()})
+    var p = map.get(dataEl.fromJobtitle);
+    if (!p.has(dataEl.fromEmail)) {
+      p.set(dataEl.fromEmail, {"email" : dataEl.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkIn": new Array(), "linkOut": new Array(), "mailOut" : new Array()})
     } 
 
-    var q = p.get(data.fromEmail);
-    q.cntOut += 1;
-    q.mailOut.push(data);    
+    var q = p.get(dataEl.fromEmail);
+    if (filterDateFn(dataEl.date)){
+      q.cntOut += 1;
+      q.mailOut.push(dataEl);
+    }
     
     // Add to 
-    if (!map.has(data.toJobtitle)) {
-      map.set(data.toJobtitle, new Map());      
+    if (!map.has(dataEl.toJobtitle)) {
+      map.set(dataEl.toJobtitle, new Map());      
     } 
 
-    p = map.get(data.toJobtitle);
-    if (!p.has(data.toEmail)) {
-      p.set(data.toEmail, {"email" : data.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkIn": new Array(), "linkOut": new Array(), "mailOut" : new Array()})
+    p = map.get(dataEl.toJobtitle);
+    if (!p.has(dataEl.toEmail)) {
+      p.set(dataEl.toEmail, {"email" : dataEl.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkIn": new Array(), "linkOut": new Array(), "mailOut" : new Array()})
     }
-    var q = p.get(data.toEmail);
-    q.cntIn += 1;
+    
+    q = p.get(dataEl.toEmail);
+    if (filterDateFn(dataEl.date)){
+      q.cntIn += 1;
+    }
   });
   return map;
 }
