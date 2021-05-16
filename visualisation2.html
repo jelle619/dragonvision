@@ -138,6 +138,10 @@
   <p>Value: <span id="demo"></span></p>
 </div>
 
+<div id='rect'>                <!-- Making rectangles for the legend -->
+  <h1>Legend</h1>
+</div>
+
 <script>
 var slider = document.getElementById("myRange");
 var output = document.getElementById("demo");
@@ -251,6 +255,55 @@ function path([source, target]) {
 };
 
 // =====================================================
+
+svg = d3.select('#rect')                     //legend
+      .append('svg')
+      var g = svg.selectAll("rect")
+  .data([10])
+  .enter()
+  .append("g")
+  .classed('rect', true)
+
+  g.append("rect")                             //The purple rect
+  .attr("width", 20)
+  .attr("height", 20)
+  .attr("x", 20)
+  .attr("y", 20)
+  .attr("fill",  "#f8f")
+  .attr('stroke', 'black')                     //The black border of the rect
+
+  g.append("rect")                             //The blue rect
+  .attr("width", 20)
+  .attr("height", 20)
+  .attr("x", 20)
+  .attr("y", 70)
+  .attr("fill",  "blue")
+  .attr('stroke', 'black')
+
+  g.append("rect")                             //The red rect
+  .attr('width', 20)
+  .attr('height', 20)
+  .attr('x', 20)
+  .attr('y', 120)          
+  .attr('fill', 'red')
+  .attr('stroke', 'black')
+
+  g.append('text')        //Text for first leg
+  .attr('x', 50)
+  .attr('y', 35)
+  .text("Test 1")
+  
+
+  g.append('text')        //Text for second leg
+  .attr('x', 50)
+  .attr('y', 85)
+  .text('Incoming')
+
+  g.append('text')        //Text for third leg
+  .attr('x', 50)
+  .attr('y', 135)
+  .text('Outgoing')
+
 
       // Initialize test data
       var maildata = [
