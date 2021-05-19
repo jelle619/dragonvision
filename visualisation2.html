@@ -20,13 +20,136 @@
   <div id='main'>
     <h1>Visualisation 2</h1>
     <p>A powerful, yet gorgeous visualisation.</p>
-  </div>
+<<<<<<< Updated upstream
+=======
+ 
+    <div class="group" id="filterDateBy">
+      <input type="radio" name="rb" id="rb1" value="All" checked/>
+      <label for="rb1">All</label>
+      <input type="radio" name="rb" id="rb2" value="Year"/>
+      <label for="rb2">Year</label>
+      <input type="radio" name="rb" id="rb3" value="Month"/>
+      <label for="rb3">Month</label>
+      <input type="radio" name="rb" id="rb4" value="Day"/>
+      <label for="rb4">Day</label>
+    </div>
+  
+    <style>
+  h1 {
+    margin: 0 0 1em;
+  }
+  .group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2em;
+    color: white;
+  }
+  input[type="checkbox"], input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+  }
+  label {
+    position: relative;
+    margin-right: 1em;
+    padding-left: 2em;
+    padding-right: 1em;
+    line-height: 2;
+    cursor: pointer;
+  }
+  label:before {
+    box-sizing: border-box;
+    content: " ";
+    position: absolute;
+    top: 0.3em;
+    left: 0;
+    display: block;
+    width: 1.4em;
+    height: 1.4em;
+    border: 2px solid white;
+    border-radius: 0.25em;
+    z-index: -1;
+  }
+  input[type="radio"] + label::before {
+    border-radius: 1em;
+  }
+  /* Checked */
+  input[type="checkbox"]:checked + label, input[type="radio"]:checked + label {
+    padding-left: 1em;
+    color: #8e44ad;
+  }
+  input[type="checkbox"]:checked + label:before, input[type="radio"]:checked + label:before {
+    top: 0;
+    width: 100%;
+    height: 2em;
+    background: white;
+  }
+  /* Transition */
+  label, label::before {
+    -webkit-transition: 0.25s all ease;
+    -o-transition: 0.25s all ease;
+    transition: 0.25s all ease;
+  }
+  </style>
+  
 
+<style>
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: url('./media/dragonhead.png');
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: url('./media/dragonhead.png');
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+  <div class="slidecontainer" id="sliderDiv">
+    <input type="range" min=0 max=100 value=0 class="slider" id="myRange">
+    <p>Value: <span id="demo"></span></p>
+>>>>>>> Stashed changes
+  </div>
+    </div>
   <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
 
   <div id="visual"></div>
+<<<<<<< Updated upstream
+=======
 
-  <script>
+  <script>  
+>>>>>>> Stashed changes
+
 // =====================================================    
 // Class and functions used to draw change-color paths between nodes. 
 // Source from https://observablehq.com/@d3/hierarchical-edge-bundling/2
@@ -221,119 +344,208 @@ function path([source, target]) {
       const colorinout = "#f8f";
       const k_csc = 6;  // 2^k_csc colors segments per curve. We are using 2^6 = 64 color segments.
 
-
-      // Transform data into hierarchy
-      //  Test rollup data
-      // var rollupData = d3.rollup(maildata, v => v.length, d => d.fromJobtitle, d => d.fromEmail);
-      // console.log(rollupData.size, rollupData);
-
-      //  Test group data
-      //var groupFrom =  d3.group(maildata, d => d.fromJobtitle, d => d.fromEmail);
-      //console.log(groupFrom.size, groupFrom);
-      // var groupTo =  d3.group(maildata, d => d.toJobtitle, d => d.toEmail);
-      // console.log(groupTo.size, groupTo);
-
-      // var groupAll = new Map([...groupFrom, ...groupTo]);
-      // console.log(groupAll.size, groupAll, groupAll.has("Trader"), groupAll.has("danny.mccarty@enron.com"));
-
-      //  use custom function generateMap
-      var groupAll = generateMap(maildata, "Day", new Date('2000-08-11'));
-      console.log(groupAll.size, groupAll);  // Debug      
-
-      var hierarchyData = d3.hierarchy(groupAll)
-        .sort((a, b) => d3.ascending(a.data[0], b.data[0]));
-      console.log(hierarchyData);     // Debug
-
-      var bl = bilink(hierarchyData);
-
-      var root = d3.cluster()
-          .size([2 * Math.PI, radius - 100])(hierarchyData);
-      console.log(root);      // Debug
-
       // Svg
-      var svg = d3.select("#visual")
-        .append("svg")
-        .attr("viewBox", [-width / 2, -width / 2, width, width]);
-   
-      // Draw nodes (representing email addresses) in a circle (use the cluster layout for the leaves)  
-      const node = svg.append("g")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "6")
-        .attr("font-weight", "normal")
-        .attr("fill", "white")
-        .selectAll("g")
-        .data(root.leaves())
-        .join("g")
-          .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
-        .append("text")
-          .attr("dy", "0.31em")
-          .attr("x", d => d.x < Math.PI ? 6 : -6)
-          .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
-          .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
-          .text( d => d.data[0])
-          .each(function(d) { d.htmlText = this; })
-          .on("mouseover", overed)
-          .on("mouseout", outed)
-          .call(text => text.append("title")
-            .text(d => "job  : " + d.parent.data[0] + "\n"
-                     + "mail : " + d.data[0] + "\n"
-                     + "outgoing : " + d.data[1].cntOut + "\n"
-                     + "incoming : " + d.data[1].cntIn + "\n"
-
-            )
-          )
-      ;
-
-      // Draw the links between nodes (representing the e-mails)
+      var  svg = d3.select("#visual")
+          .append("svg")
+          .attr("viewBox", [-width / 2, -width / 2, width, width]);
+      // Define line to draw link between nodes      
       var line = d3.lineRadial()
-                .curve(d3.curveBundle) // .beta(0.85))
-                .radius(d => d.y)
-                .angle(d => d.x);
-      //    Gray vertsion
-      // const link = svg.append("g")
-      //   .attr("stroke", colornone)
-      //   .attr("fill", "none")
-      // .selectAll("path")
-      // .data(root.leaves().flatMap(leaf => leaf.data[1].linkOut))
-      // .join("path")
-      //   .style("mix-blend-mode", "multiply")
-      //   .attr("d", ([i, o]) => line(i.path(o)))
-      //   .each(function(d) { d.htmlPath = this; });
+          .curve(d3.curveBundle) // .beta(0.85))
+          .radius(d => d.y)
+          .angle(d => d.x);
 
-      //    Color vertsion
-      var color = t => d3.interpolateRdBu(1 - t)
+      // Group for nodes
+      const groupNode = svg.append("g")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "6")
+          .attr("font-weight", "normal")
+          .attr("fill", "white")
 
-      // console.log("Paths =========>");    // Debug      
-      // console.log(root.leaves()
-      //   .flatMap(leaf => leaf.data[1].linkOut.map(path)));    // Debug
+      // Group for paths (edges)
+      var groupPath = svg.append("g")        
+          .attr("fill", "none");
 
-      // console.log(d3.transpose(root.leaves()
-      //   .flatMap(leaf => leaf.data[1].linkOut.map(path))
-      //   .map(path => Array.from(path.split(k_csc)))));     // Debug
+      // Group for ingoing paths of the selected nodes
+      var groupIn = svg.append("g")
+          .attr("stroke", colorin)      
+          .attr("fill", "none");
+
+      // Group for outgoing paths of the selected nodes
+      var groupOut = svg.append("g")
+          .attr("stroke", colorout)      
+          .attr("fill", "none");
+      
+      var link;           
+      var mapSliderVal;
+      var arrSliderVal;
+      var slider = document.getElementById("myRange");
+      var output = document.getElementById("demo");          
+
+      slider.oninput = function() {
+        output.innerHTML = arrSliderVal[slider.value];
+        visualisation2(d3.select('input[name="rb"]:checked').node().value, mapSliderVal.get(arrSliderVal[slider.value]));
+      }
+
+      // Showing/ Hiding the slider div
+      function hideSlider() {
+        var x = document.getElementById("rb1");
+        var y = document.getElementById("sliderDiv");
+        if (x.checked === true) {
+          y.style.display = "none";
+        } else {
+          y.style.display = "inline";
+        }
+      }
+
+      // Radio buttons initialization 
+      console.log(d3.selectAll('input[name="rb"]'));    // Debug
+      d3.selectAll('input[name="rb"]')
+        .on("input", function() {
+          console.log("On Input" + d3.select('input[name="rb"]:checked').node().value);  // Debug
+          var filterDateBy = d3.select('input[name="rb"]:checked').node().value;
+          sliderInit(filterDateBy);
+          console.log("BEFORE VIS 2", mapSliderVal.get(arrSliderVal[slider.value])); // Debug
+          visualisation2(filterDateBy, mapSliderVal.get(arrSliderVal[slider.value]));
+        });
+
+      console.log(d3.selectAll("rb"));
+      sliderInit(d3.select('input[name="rb"]:checked').node().value);
+      console.log("BEFORE VIS 2", mapSliderVal.get(arrSliderVal[slider.value]))
+      visualisation2(d3.select('input[name="rb"]:checked').node().value, mapSliderVal.get(arrSliderVal[slider.value]));
+
+      // Slider initialization
+      function sliderInit(filterDateBy){
+        hideSlider();
+
+        switch(filterDateBy){
+          case "All":
+            mapSliderVal = d3.rollup(maildata
+              , v => 1
+              , d => 1);
+            break;
+
+          case "Year":
+            mapSliderVal = d3.rollup(maildata
+              , v => new Date(v[0].date.getFullYear(), 0, 1)
+              , d => d.date.getFullYear());
+            break;
+
+          case "Month":
+            mapSliderVal = d3.rollup(maildata
+              , v => new Date(v[0].date.getFullYear(), v[0].date.getMonth(), 1)
+              , d => d.date.getFullYear() + "-" + (d.date.getMonth() + 1));
+            break;
+
+          case "Day":
+            mapSliderVal = d3.rollup(maildata
+              , v => new Date(v[0].date.getFullYear(), v[0].date.getMonth(), v[0].date.getDate())
+              , d => d.date.getFullYear() + "-" + (d.date.getMonth() + 1) + "-" + d.date.getDate());
+            break;
+        }
+
+        console.log("mapSliderVal = ", mapSliderVal);   // Debug 
+        arrSliderVal = Array.from(mapSliderVal.keys());
+        arrSliderVal.sort();
+        console.log("arrSliderVal = ", arrSliderVal);   // Debug 
+
+        console.log(d3.select("input[id=myRange]").node()); //Debug        
+
+        d3.select("#myRange")
+          .attr("max", arrSliderVal.length - 1)
+          .attr("value", 0);
+
+        output.innerHTML = arrSliderVal[slider.value];  
+      }
 
 
-      const link = svg.append("g")        
-        .attr("fill", "none")
-      .selectAll("path")
-      .data(d3.transpose(root.leaves()
-        .flatMap(leaf => leaf.data[1].linkOut.map(path))
-        .map(path => Array.from(path.split(k_csc))))
-      )
-      .join("path")
-        .style("mix-blend-mode", "overlay")     // hue, color, overlay, normal
-        .attr("stroke", (d, i) => color(d3.easeQuad(i / ((1 << k_csc) - 1))))
-        .attr("d", d => d.join(""))       
-        .each(function(d) { d.htmlPath = this; });
 
-    const groupIn = svg.append("g")
-      .attr("stroke", colorin)      
-      .attr("fill", "none");
+      // Visualisation
+      function visualisation2 (filterDateBy = "All", dateFilter){
+        console.log("visualisation2", filterDateBy, dateFilter);
 
-    const groupOut = svg.append("g")
-      .attr("stroke", colorout)      
-      .attr("fill", "none");
+        // Transform data into hierarchy
+        //  Test rollup data
+        // var rollupData = d3.rollup(maildata, v => v.length, d => d.fromJobtitle, d => d.fromEmail);
+        // console.log(rollupData.size, rollupData);
 
+        //  Test group data
+        //var groupFrom =  d3.group(maildata, d => d.fromJobtitle, d => d.fromEmail);
+        //console.log(groupFrom.size, groupFrom);
+        // var groupTo =  d3.group(maildata, d => d.toJobtitle, d => d.toEmail);
+        // console.log(groupTo.size, groupTo);
 
+        // var groupAll = new Map([...groupFrom, ...groupTo]);
+        // console.log(groupAll.size, groupAll, groupAll.has("Trader"), groupAll.has("danny.mccarty@enron.com"));
+
+        //  use custom function generateMap
+        var groupAll = generateMap(maildata, filterDateBy, dateFilter);
+        console.log(groupAll.size, groupAll);  // Debug      
+
+        var hierarchyData = d3.hierarchy(groupAll)
+          .sort((a, b) => d3.ascending(a.data[0], b.data[0]));
+        console.log(hierarchyData);     // Debug
+
+        var bl = bilink(hierarchyData);
+
+        var root = d3.cluster()
+            .size([2 * Math.PI, radius - 100])(hierarchyData);
+        console.log(root);      // Debug
+        
+        // Delete old visualisation
+        groupNode.selectAll("g").remove();
+        groupPath.selectAll().remove();
+        groupIn.selectAll().remove();
+        groupOut.selectAll().remove();
+
+        // Draw nodes (representing email addresses) in a circle (use the cluster layout for the leaves)  
+        node = groupNode.selectAll("g")
+          .data(root.leaves())
+          .join("g")
+            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+          .append("text")
+            .attr("dy", "0.31em")
+            .attr("x", d => d.x < Math.PI ? 6 : -6)
+            .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+            .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+            .text( d => d.data[0])
+            .each(function(d) { d.htmlText = this; })
+            .on("mouseover", overed)
+            .on("mouseout", outed)
+            .call(text => text.append("title")
+              .text(d => "job  : " + d.parent.data[0] + "\n"
+                      + "mail : " + d.data[0] + "\n"
+                      + "outgoing : " + d.data[1].cntOut + "\n"
+                      + "incoming : " + d.data[1].cntIn + "\n"
+
+              )
+            )
+        ;
+
+        // Draw the links between nodes (representing the e-mails)        
+
+        //    == Gray vertsion ==
+        // link = groupPath.attr("stroke", colornone)
+        // .selectAll("path")
+        // .data(root.leaves().flatMap(leaf => leaf.data[1].linkOut))
+        // .join("path")
+        //   .style("mix-blend-mode", "multiply")
+        //   .attr("d", ([i, o]) => line(i.path(o)))
+        //   .each(function(d) { d.htmlPath = this; });
+
+        //   == Color vertsion ==
+        var color = t => d3.interpolateRdBu(1 - t)
+
+        link = groupPath.selectAll("path")
+          .data(d3.transpose(root.leaves()
+            .flatMap(leaf => leaf.data[1].linkOut.map(path))
+            .map(path => Array.from(path.split(k_csc))))
+          )
+          .join("path")
+            .style("mix-blend-mode", "overlay")     // hue, color, overlay, normal
+            .attr("stroke", (d, i) => color(d3.easeQuad(i / ((1 << k_csc) - 1))))
+            .attr("d", d => d.join(""))       
+            .each(function(d) { d.htmlPath = this; });
+      }
 
   function overed(event, d) {
     //link.style("mix-blend-mode", "darken");
@@ -383,7 +595,7 @@ function path([source, target]) {
 function generateMap(data, filterDateBy = "All", dateFilter) {
 
   var filterDateFn;
-  switch(filterDateBy) {
+  switch(filterDateBy) { 
     case "All": 
       filterDateFn = date => true;   
       break;
@@ -391,10 +603,10 @@ function generateMap(data, filterDateBy = "All", dateFilter) {
       filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear());
       break;
     case "Month":
-      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear() && date.getMonth() == dateFilter.getMonth());
+      filterDateFn = date => (date.getFullYear() == (dateFilter.getFullYear()) && (date.getMonth() + 1) == (dateFilter.getMonth() + 1));
       break;
     case "Day": 
-      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear() && date.getMonth() == dateFilter.getMonth() && date.getDay() == dateFilter.getDay());
+      filterDateFn = date => (date.getFullYear() == (dateFilter.getFullYear()) && (date.getMonth() + 1) == (dateFilter.getMonth() + 1) && date.getDate() == dateFilter.getDate());
       break;
     
   }
