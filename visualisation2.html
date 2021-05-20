@@ -1,13 +1,16 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content= "width=device-width, initial-scale=1.0"> <!-- makes the website responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- makes the website responsive -->
   <title>Dragon Vision — Visualisation 2</title>
   <link rel="stylesheet" type="text/css" href="css/global.css" media="screen" /> <!-- import global stylesheet -->
   <script src="https://d3js.org/d3.v6.min.js"></script> <!-- import D3.js, version 6 -->
+  <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script> <!-- import Papa Parse, version 5 -->
 </head>
+
 <body>
 
   <div id='nav'>
@@ -19,626 +22,132 @@
 
   <div id='main'>
     <h1>Visualisation 2</h1>
-    <p>A powerful, yet gorgeous visualisation.</p>
- 
-    <div class="group">
-      <input type="radio" name="rb" id="rb1" />
-      <label for="rb1">All</label>
-      <input type="radio" name="rb" id="rb2" />
-      <label for="rb2">Year</label>
-      <input type="radio" name="rb" id="rb3" />
-      <label for="rb3">Month</label>
-      <input type="radio" name="rb" id="rb4" />
-      <label for="rb4">Day</label>
-    </div>
-  
-    <style>
-  h1 {
-    margin: 0 0 1em;
-  }
-  .group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 2em;
-    color: white;
-  }
-  input[type="checkbox"], input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    z-index: -1;
-  }
-  label {
-    position: relative;
-    margin-right: 1em;
-    padding-left: 2em;
-    padding-right: 1em;
-    line-height: 2;
-    cursor: pointer;
-  }
-  label:before {
-    box-sizing: border-box;
-    content: " ";
-    position: absolute;
-    top: 0.3em;
-    left: 0;
-    display: block;
-    width: 1.4em;
-    height: 1.4em;
-    border: 2px solid white;
-    border-radius: 0.25em;
-    z-index: -1;
-  }
-  input[type="radio"] + label::before {
-    border-radius: 1em;
-  }
-  /* Checked */
-  input[type="checkbox"]:checked + label, input[type="radio"]:checked + label {
-    padding-left: 1em;
-    color: #8e44ad;
-  }
-  input[type="checkbox"]:checked + label:before, input[type="radio"]:checked + label:before {
-    top: 0;
-    width: 100%;
-    height: 2em;
-    background: white;
-  }
-  /* Transition */
-  label, label::before {
-    -webkit-transition: 0.25s all ease;
-    -o-transition: 0.25s all ease;
-    transition: 0.25s all ease;
-  }
-  </style>
-  
+    <p>IT'S ALIIIVE! 🔥🐲<br>The visual below is made using D3.</p>
 
-<style>
-.slidecontainer {
-  width: 100%;
-}
+    <input type="file" id="input" accept=".csv"> <!-- HTML iput, user can select a file here. -->
 
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
+    <script>
+      document.getElementById('input').addEventListener('change', function selectedFileChanged() { // when the state of the HTML input changes (a file gets selected), this function will trigger
+        if (this.files.length === 0) { // This statement will be true when the user cancels out of the upload dialog.
+          console.log('No file selected.'); // Log to the console that the user has selected no file.
+          return; // Exit the function, no need to do anything
+        }
 
-.slider:hover {
-  opacity: 1;
-}
+        // create the file object
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 32px;
-  height: 32px;
-  border: 0;
-  background: url('/media/dragonhead.png');
-  cursor: pointer;
-}
+        var file = this.files[0]; // this variable will contain the file object, with this.files[0] = document.getElementById('input').files[0]
 
-.slider::-moz-range-thumb {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  background: url('/media/dragonhead.png');
-  cursor: pointer;
-}
-</style>
-</head>
-<body>
+        // printing CSV to the console
 
-<div class="slidecontainer">
-  <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-  <p>Value: <span id="demo"></span></p>
-</div>
+        const reader = new FileReader();
+        reader.onload = function fileReadCompleted() { // when the reader is done, the content is in reader.result.
+          console.log("CSV input:", reader); // print the CSV input in the console
+        };
+        reader.readAsText(file); // we will tell reader to interpret the file as text, so reader.result will be text also
 
-<div id='rect'>                <!-- Making rectangles for the legend -->
-  <h1>Legend</h1>
-</div>
+        // parsing the CSV into JSON using Papa Parse
 
-<script>
-var slider = document.getElementById("myRange");
-var output = document.getElementById("demo");
-output.innerHTML = slider.value;
+        var config = { // we will define the config that Papa Parse is going to use
+          delimiter: "", // auto-detect
+          newline: "", // auto-detect
+          quoteChar: '"',
+          escapeChar: '"',
+          header: true,
+          transformHeader: undefined,
+          dynamicTyping: false,
+          preview: 0,
+          encoding: "",
+          worker: false,
+          comments: false,
+          step: undefined,
+          complete: undefined,
+          error: undefined,
+          download: false,
+          downloadRequestHeaders: undefined,
+          downloadRequestBody: undefined,
+          skipEmptyLines: false,
+          chunk: undefined,
+          chunkSize: undefined,
+          fastMode: undefined,
+          beforeFirstChunk: undefined,
+          withCredentials: undefined,
+          transform: undefined,
+          delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+        };
 
-slider.oninput = function() {
-  output.innerHTML = this.value;
-}
-</script>
+        Papa.parse(file, {
+          header: true,
+          complete: function(results) {
+            console.log("JSON output:", results);
+            data = results.data;
+          }
+        });
 
-  </div>
-
-  <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
+      });
+    </script>
 
     <div id="visual"></div>
 
-  <script>
-// =====================================================    
-// Class and functions used to draw change-color paths between nodes. 
-// Source from https://observablehq.com/@d3/hierarchical-edge-bundling/2
-function dot([ka, kb, kc, kd], {a, b, c, d}) {
-  return [
-    ka * a[0] + kb * b[0] + kc * c[0] + kd * d[0],
-    ka * a[1] + kb * b[1] + kc * c[1] + kd * d[1]
-  ];
-}
-
-class Line {
-  constructor(a, b) {
-    this.a = a;
-    this.b = b;
-  }
-  split() {
-    const {a, b} = this;
-    const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-    return [new Line(a, m), new Line(m, b)];
-  }
-  toString() {
-    return `M${this.a}L${this.b}`;
-  }
-};
-
-const l1 = [4 / 8, 4 / 8, 0 / 8, 0 / 8];
-const l2 = [2 / 8, 4 / 8, 2 / 8, 0 / 8];
-const l3 = [1 / 8, 3 / 8, 3 / 8, 1 / 8];
-const r1 = [0 / 8, 2 / 8, 4 / 8, 2 / 8];
-const r2 = [0 / 8, 0 / 8, 4 / 8, 4 / 8];
-
-class BezierCurve {  
-  constructor(a, b, c, d) {
-    this.a = a;
-    this.b = b;
-    this.c = c;
-    this.d = d;
-  }
-  split() {
-    const m = dot(l3, this);
-    return [
-      new BezierCurve(this.a, dot(l1, this), dot(l2, this), m),
-      new BezierCurve(m, dot(r1, this), dot(r2, this), this.d)
-    ];
-  }
-  toString() {
-    return `M${this.a}C${this.b},${this.c},${this.d}`;
-  }
-};
-
-class Path {
-  constructor(_) {
-    this._ = _;
-    this._m = undefined;
-  }
-  moveTo(x, y) {
-    this._ = [];
-    this._m = [x, y];
-  }
-  lineTo(x, y) {
-    this._.push(new Line(this._m, this._m = [x, y]));
-  }
-  bezierCurveTo(ax, ay, bx, by, x, y) {
-    this._.push(new BezierCurve(this._m, [ax, ay], [bx, by], this._m = [x, y]));
-  }
-  *split(k = 0) {
-    const n = this._.length;
-    const i = Math.floor(n / 2);
-    const j = Math.ceil(n / 2);
-    const a = new Path(this._.slice(0, i));
-    const b = new Path(this._.slice(j));
-    if (i !== j) {
-      const [ab, ba] = this._[i].split();
-      a._.push(ab);
-      b._.unshift(ba);
-    }
-    if (k > 1) {
-      yield* a.split(k - 1);
-      yield* b.split(k - 1);
-    } else {
-      yield a;
-      yield b;
-    }
-  }
-  toString() {
-    return this._.join("");
-  }
-};
-
-function path([source, target]) {
-  var p = new Path;
-  line.context(p)(source.path(target));
-  return p;
-};
-
-// =====================================================
-
-svg = d3.select('#rect')                     //legend
-      .append('svg')
-      var g = svg.selectAll("rect")
-  .data([10])
-  .enter()
-  .append("g")
-  .classed('rect', true)
-
-  g.append("rect")                             //The purple rect
-  .attr("width", 20)
-  .attr("height", 20)
-  .attr("x", 20)
-  .attr("y", 20)
-  .attr("fill",  "#f8f")
-  .attr('stroke', 'black')                     //The black border of the rect
-
-  g.append("rect")                             //The blue rect
-  .attr("width", 20)
-  .attr("height", 20)
-  .attr("x", 20)
-  .attr("y", 70)
-  .attr("fill",  "blue")
-  .attr('stroke', 'black')
-
-  g.append("rect")                             //The red rect
-  .attr('width', 20)
-  .attr('height', 20)
-  .attr('x', 20)
-  .attr('y', 120)          
-  .attr('fill', 'red')
-  .attr('stroke', 'black')
-
-  g.append('text')        //Text for first leg
-  .attr('x', 50)
-  .attr('y', 35)
-  .text("Test 1")
-  
-
-  g.append('text')        //Text for second leg
-  .attr('x', 50)
-  .attr('y', 85)
-  .text('Incoming')
-
-  g.append('text')        //Text for third leg
-  .attr('x', 50)
-  .attr('y', 135)
-  .text('Outgoing')
-
-
-      // Initialize test data
-      var maildata = [
-        {
-          "date" : new Date('2000-08-13'),
-          "fromId" :  96,
-          "fromEmail" : "matthew.lenhart@enron.com",
-          "fromJobtitle" : "Employee",
-          "toId" : 77,
-          "toEmail" : "eric.bass@enron.com",
-          "toJobtitle" : "Trader",  
-          "messageType" : "CC", 
-          "sentiment" : 0.01369863
-        },
-        {
-          "date" : new Date('2001-11-22'),
-          "fromId" :  64,
-          "fromEmail" : "danny.mccarty@enron.com",
-          "fromJobtitle" : "Vice President",
-          "toId" : 121,
-          "toEmail" : "rod.hayslett@enron.com",
-          "toJobtitle" : "Vice President",  
-          "messageType" : "TO", 
-          "sentiment" : 0
-        },
-        {
-          "date" : new Date('2000-08-12'),
-          "fromId" :  64,
-          "fromEmail" : "danny.mccarty@enron.com",
-          "fromJobtitle" : "Vice President",
-          "toId" : 121,
-          "toEmail" : "rod.hayslett@enron.com",
-          "toJobtitle" : "Vice President",  
-          "messageType" : "TO", 
-          "sentiment" : 0
-        }
-      ];
-
-      var empCnt = 150;
-      for (var i = 0; i<empCnt; i++) {
-        var jobFrom = "Employee";
-        var jobTo = "Employee";
-        var res = i%3;
-        if (res == 0){
-          jobFrom = "Trader"
-        } else if (res == 1){
-          jobFrom = "Manager"
-        }
-
-        res = (empCnt - i - 1)%3;
-        if (res == 0){
-          jobTo = "Trader"
-        } else if (res == 1){
-          jobTo= "Manager"
-        }
-
-        var m = {
-          "date" : new Date('2000-08-1' + i%3),
-          "fromId" :  i,
-          "fromEmail" : "mail" + i + "@enron.com",
-          "fromJobtitle" : jobFrom,
-          "toId" : i+10,
-          "toEmail" : "mail" + (empCnt - i - 1) + "@enron.com",
-          "toJobtitle" : jobTo, 
-          "messageType" : "CC", 
-          "sentiment" : 0
-        }
-        maildata.push(m)
-
-        m = {
-          "date" : new Date('2000-08-1' + i%3),
-          "fromId" :  64,
-          "fromEmail" : "danny.mccarty@enron.com",
-          "fromJobtitle" : "Vice President",
-          "toId" : i,
-          "toEmail" : "mail" + i + "@enron.com",
-          "toJobtitle" : jobFrom, 
-          "messageType" : "CC", 
-          "sentiment" : 0
-        }
-        maildata.push(m)
-      }
-      
-      //  Debug
-      for (var i = 0; i<maildata.length; i++) {
-        console.log("maildata[" + i + "]=" + maildata[i].fromJobtitle + ", " + maildata[i].fromEmail + ", " + maildata[i].toJobtitle + ", " + maildata[i].toEmail)
-      } 
-
-  
-      // Dimenstions
-      const width = 954;
-      const radius = width / 2;
-      const colorin = "#00f";
-      const colorout = "#f00";
-      const colornone = "#ccc";
-      const colorinout = "#f8f";
-      const k_csc = 6;  // 2^k_csc colors segments per curve. We are using 2^6 = 64 color segments.
-
-
-      // Transform data into hierarchy
-      //  Test rollup data
-      // var rollupData = d3.rollup(maildata, v => v.length, d => d.fromJobtitle, d => d.fromEmail);
-      // console.log(rollupData.size, rollupData);
-
-      //  Test group data
-      //var groupFrom =  d3.group(maildata, d => d.fromJobtitle, d => d.fromEmail);
-      //console.log(groupFrom.size, groupFrom);
-      // var groupTo =  d3.group(maildata, d => d.toJobtitle, d => d.toEmail);
-      // console.log(groupTo.size, groupTo);
-
-      // var groupAll = new Map([...groupFrom, ...groupTo]);
-      // console.log(groupAll.size, groupAll, groupAll.has("Trader"), groupAll.has("danny.mccarty@enron.com"));
-
-      //  use custom function generateMap
-      var groupAll = generateMap(maildata, "Day", new Date('2000-08-11'));
-      console.log(groupAll.size, groupAll);  // Debug      
-
-      var hierarchyData = d3.hierarchy(groupAll)
-        .sort((a, b) => d3.ascending(a.data[0], b.data[0]));
-      console.log(hierarchyData);     // Debug
-
-      var bl = bilink(hierarchyData);
-
-      var root = d3.cluster()
-          .size([2 * Math.PI, radius - 100])(hierarchyData);
-      console.log(root);      // Debug
-
-      // Svg
+    <script>
+      // create the svg area
       var svg = d3.select("#visual")
         .append("svg")
-        .attr("viewBox", [-width / 2, -width / 2, width, width]);
-   
-      // Draw nodes (representing email addresses) in a circle (use the cluster layout for the leaves)  
-      const node = svg.append("g")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "6")
-        .attr("font-weight", "normal")
-        .attr("fill", "white")
+        .attr("width", 440)
+        .attr("height", 440)
+        .append("g")
+        .attr("transform", "translate(220,220)")
+
+      // create input data: a square matrix that provides flow between entities
+      var matrix = [
+        [11975, 5871, 8916, 2868],
+        [1951, 10048, 2060, 6171],
+        [8010, 16145, 8090, 8045],
+        [1013, 990, 940, 6907]
+      ];
+
+      // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
+      var res = d3.chord()
+        .padAngle(0.05) // padding between entities (black arc)
+        .sortSubgroups(d3.descending)
+        (matrix)
+
+      // add the groups on the inner part of the circle
+      svg
+        .datum(res)
+        .append("g")
         .selectAll("g")
-        .data(root.leaves())
-        .join("g")
-          .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
-        .append("text")
-          .attr("dy", "0.31em")
-          .attr("x", d => d.x < Math.PI ? 6 : -6)
-          .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
-          .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
-          .text( d => d.data[0])
-          .each(function(d) { d.htmlText = this; })
-          .on("mouseover", overed)
-          .on("mouseout", outed)
-          .call(text => text.append("title")
-            .text(d => "job  : " + d.parent.data[0] + "\n"
-                     + "mail : " + d.data[0] + "\n"
-                     + "outgoing : " + d.data[1].cntOut + "\n"
-                     + "incoming : " + d.data[1].cntIn + "\n"
+        .data(function(d) {
+          return d.groups;
+        })
+        .enter()
+        .append("g")
+        .append("path")
+        .style("fill", "grey")
+        .style("stroke", "black")
+        .attr("d", d3.arc()
+          .innerRadius(200)
+          .outerRadius(210)
+        )
 
-            )
-          )
-      ;
+      // Add the links between groups
+      svg
+        .datum(res)
+        .append("g")
+        .selectAll("path")
+        .data(function(d) {
+          return d;
+        })
+        .enter()
+        .append("path")
+        .attr("d", d3.ribbon()
+          .radius(200)
+        )
+        .style("fill", "#69b3a2")
+        .style("stroke", "black");
+    </script>
+  </div>
 
-      // Draw the links between nodes (representing the e-mails)
-      var line = d3.lineRadial()
-                .curve(d3.curveBundle) // .beta(0.85))
-                .radius(d => d.y)
-                .angle(d => d.x);
-      //    Gray vertsion
-      // const link = svg.append("g")
-      //   .attr("stroke", colornone)
-      //   .attr("fill", "none")
-      // .selectAll("path")
-      // .data(root.leaves().flatMap(leaf => leaf.data[1].linkOut))
-      // .join("path")
-      //   .style("mix-blend-mode", "multiply")
-      //   .attr("d", ([i, o]) => line(i.path(o)))
-      //   .each(function(d) { d.htmlPath = this; });
-
-      //    Color vertsion
-      var color = t => d3.interpolateRdBu(1 - t)
-
-      // console.log("Paths =========>");    // Debug      
-      // console.log(root.leaves()
-      //   .flatMap(leaf => leaf.data[1].linkOut.map(path)));    // Debug
-
-      // console.log(d3.transpose(root.leaves()
-      //   .flatMap(leaf => leaf.data[1].linkOut.map(path))
-      //   .map(path => Array.from(path.split(k_csc)))));     // Debug
-
-
-      const link = svg.append("g")        
-        .attr("fill", "none")
-      .selectAll("path")
-      .data(d3.transpose(root.leaves()
-        .flatMap(leaf => leaf.data[1].linkOut.map(path))
-        .map(path => Array.from(path.split(k_csc))))
-      )
-      .join("path")
-        .style("mix-blend-mode", "overlay")     // hue, color, overlay, normal
-        .attr("stroke", (d, i) => color(d3.easeQuad(i / ((1 << k_csc) - 1))))
-        .attr("d", d => d.join(""))       
-        .each(function(d) { d.htmlPath = this; });
-
-    const groupIn = svg.append("g")
-      .attr("stroke", colorin)      
-      .attr("fill", "none");
-
-    const groupOut = svg.append("g")
-      .attr("stroke", colorout)      
-      .attr("fill", "none");
-
-
-
-  function overed(event, d) {
-    //link.style("mix-blend-mode", "darken");
-    d3.select(this).attr("font-weight", "bold");    
-    
-    d3.selectAll(d.data[1].linkIn.map(d => d[0].htmlText)).attr("fill", colorin).attr("font-weight", "bold");    
-    d3.selectAll(d.data[1].linkOut.map(d => d[1].htmlText))
-      .attr("fill", 
-        function(d) {   
-          return d3.select(this).attr("fill")==colorin ? colorinout : colorout;
-        }
-      )
-      .attr("font-weight", "bold");
-
-    var line = d3.lineRadial()
-                .curve(d3.curveBundle) // .beta(0.85))
-                .radius(d => d.y)
-                .angle(d => d.x);
-
-    groupIn.selectAll("path")
-      .data(d.data[1].linkIn)
-      .join("path")
-        .style("mix-blend-mode", "multiply")
-        .attr("d", ([i, o]) => line(i.path(o)))
-        .each(function(d) { d.htmlPath = this; });  
-        
-    groupOut.selectAll("path")
-      .data(d.data[1].linkOut)
-      .join("path")
-        .style("mix-blend-mode", "multiply")
-        .attr("d", ([i, o]) => line(i.path(o)))
-        .each(function(d) { d.htmlPath = this; });         
-  }
-
-  function outed(event, d) {
-    link.style("mix-blend-mode", "overlay");
-    d3.select(this).attr("font-weight", null);
-    
-    d3.selectAll(d.data[1].linkIn.map(d => d[0].htmlText)).attr("fill", null).attr("font-weight", null);
-    d3.selectAll(d.data[1].linkOut.map(d => d[1].htmlText)).attr("fill", null).attr("font-weight", null);
-
-    d3.selectAll(d.data[1].linkIn.map(d => d.htmlPath)).remove();
-    d3.selectAll(d.data[1].linkOut.map(d => d.htmlPath)).remove();
-  }
-
-
-function generateMap(data, filterDateBy = "All", dateFilter) {
-
-  var filterDateFn;
-  switch(filterDateBy) {
-    case "All": 
-      filterDateFn = date => true;   
-      break;
-    case "Year":
-      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear());
-      break;
-    case "Month":
-      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear() && date.getMonth() == dateFilter.getMonth());
-      break;
-    case "Day": 
-      filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear() && date.getMonth() == dateFilter.getMonth() && date.getDay() == dateFilter.getDay());
-      break;
-    
-  }
-
-  // Transforms array of objects data (maildata) into map     
-  var map = new Map;
-  data.forEach(function find(dataEl) {         
-    // Add from 
-    if (!map.has(dataEl.fromJobtitle)) {
-      map.set(dataEl.fromJobtitle, new Map());      
-    } 
-
-    var p = map.get(dataEl.fromJobtitle);
-    if (!p.has(dataEl.fromEmail)) {
-      p.set(dataEl.fromEmail, {"email" : dataEl.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkIn": new Array(), "linkOut": new Array(), "mailOut" : new Array()})
-    } 
-
-    var q = p.get(dataEl.fromEmail);
-    if (filterDateFn(dataEl.date)){
-      q.cntOut += 1;
-      q.mailOut.push(dataEl);
-    }
-    
-    // Add to 
-    if (!map.has(dataEl.toJobtitle)) {
-      map.set(dataEl.toJobtitle, new Map());      
-    } 
-
-    p = map.get(dataEl.toJobtitle);
-    if (!p.has(dataEl.toEmail)) {
-      p.set(dataEl.toEmail, {"email" : dataEl.fromEmail, "cntOut" : 0, "cntIn" : 0, "linkIn": new Array(), "linkOut": new Array(), "mailOut" : new Array()})
-    }
-    
-    q = p.get(dataEl.toEmail);
-    if (filterDateFn(dataEl.date)){
-      q.cntIn += 1;
-    }
-  });
-  return map;
-}
-
-function bilink(root) {
-  // Fills the outgoing and incoming mails (links) for each node
-  const map = new Map(root.leaves().map(d => [d.data[0], d]));
-  // console.log("bilink: ");   // Debug
-  // console.log(map);       // Debug
-  // console.log("bilink begin for: ");    // Debug
-  for (const d of root.leaves()) { 
-    d.data[1].linkOut = d.data[1].mailOut.map(i => [d, map.get(i.toEmail)]);
-    // console.log(d.data[1].linkOut);   // Debug
-  }
-  // console.log("bilink end for: ");    // Debug
-  for (const d of root.leaves()) { 
-    for (const o of d.data[1].linkOut){ 
-      // console.log(o);     // Debug
-      o[1].data[1].linkIn.push(o);
-    }
-  }
-  return root;
-}
-
-  </script>
-
-
+  <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
 </body>
+
 </html>
