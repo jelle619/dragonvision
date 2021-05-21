@@ -1,5 +1,8 @@
 # Dragon Vision
-Our visualisation web app
+Our visualisation web app.
+
+## Prototype
+The prototype was finished on 21/05/2021. In this prototype, only visualisation 1 accepts data and shows an according visualisation. Visualisation 2 is a placeholder and only shows a static graphic made with D3. It is recommended you visit https://dragonvision.jellezwie.rs to try out this prototype.
 
 ## Starting the application
 It is recommended you use a modern desktop browser to visit the website (though the website is designed to be responsive, should you try to visit it using a smart phone). In our testing, Google Chrome, Firefox and Safari (macOS) behaved correctly.
