@@ -132,20 +132,20 @@
             .attr('x', 50)
             .attr('y', 35)
             .text("Incoming/outgoing")
-              .attr('fill', 'white')
+            .attr('fill', 'white')
 
 
           g.append('text') //Text for second leg
             .attr('x', 50)
             .attr('y', 85)
             .text('Incoming')
-              .attr('fill', 'white')
+            .attr('fill', 'white')
 
           g.append('text') //Text for third leg
             .attr('x', 50)
             .attr('y', 135)
             .text('Outgoing')
-              .attr('fill', 'white')
+            .attr('fill', 'white')
 
           // =====================================================
           // Class and functions used to draw change-color paths between nodes.
@@ -218,6 +218,7 @@
               this._.push(new Line(this._m, this._m = [x, y]));
             }
             bezierCurveTo(ax, ay, bx, by, x, y) {
+
                 this._.push(new BezierCurve(this._m, [ax, ay], [bx, by], this._m = [x, y]));
               }
               * split(k = 0) {
@@ -239,6 +240,7 @@
                   yield b;
                 }
               }
+
             toString() {
               return this._.join("");
             }
@@ -253,6 +255,7 @@
           // =====================================================
 
           // Initialize test data
+
 /*          
           var maildata = [{
               "date": new Date('2000-08-13'),
@@ -349,7 +352,6 @@
 
           console.log(maildata);  // Debug
 
-
           // Dimenstions
           const width = 954;
           const radius = width / 2;
@@ -397,6 +399,7 @@
           var output = document.getElementById("demo");
 
           slider.oninput = function() {
+
             output.innerHTML = arrSliderVal[slider.value];
             visualisation1(d3.select('input[name="rb"]:checked').node().value, mapSliderVal.get(arrSliderVal[slider.value]));
           }
@@ -415,7 +418,9 @@
           // Radio buttons initialization
           console.log(d3.selectAll('input[name="rb"]')); // Debug
           d3.selectAll('input[name="rb"]')
+
             .on("input", function() {
+
               console.log("On Input" + d3.select('input[name="rb"]:checked').node().value); // Debug
               var filterDateBy = d3.select('input[name="rb"]:checked').node().value;
               sliderInit(filterDateBy);
@@ -515,7 +520,9 @@
               .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
               .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
               .text(d => d.data[0])
+
               .each(function(d) {
+
                 d.htmlText = this;
               })
               .on("mouseover", overed)
@@ -551,7 +558,9 @@
               .style("mix-blend-mode", "overlay") // hue, color, overlay, normal
               .attr("stroke", (d, i) => color(d3.easeQuad(i / ((1 << k_csc) - 1))))
               .attr("d", d => d.join(""))
+
               .each(function(d) {
+
                 d.htmlPath = this;
               });
           }
@@ -563,6 +572,7 @@
             d3.selectAll(d.data[1].linkIn.map(d => d[0].htmlText)).attr("fill", colorin).attr("font-weight", "bold");
             d3.selectAll(d.data[1].linkOut.map(d => d[1].htmlText))
               .attr("fill",
+
                 function(d) {
                   return d3.select(this).attr("fill") == colorin ? colorinout : colorout;
                 }
@@ -579,7 +589,9 @@
               .join("path")
               .style("mix-blend-mode", "multiply")
               .attr("d", ([i, o]) => line(i.path(o)))
+
               .each(function(d) {
+
                 d.htmlPath = this;
               });
 
@@ -588,7 +600,9 @@
               .join("path")
               .style("mix-blend-mode", "multiply")
               .attr("d", ([i, o]) => line(i.path(o)))
+
               .each(function(d) {
+
                 d.htmlPath = this;
               });
           }
@@ -647,8 +661,10 @@
               var q = p.get(dataEl.fromEmail);
               if (filterDateFn(dataEl.date)) {
                 q.cntOut += 1;
+
                 if (dataEl.fromEmail != dataEl.toEmail){
                   q.mailOut.push(dataEl); 
+
                 }
               }
 
@@ -660,7 +676,9 @@
               p = map.get(dataEl.toJobtitle);
               if (!p.has(dataEl.toEmail)) {
                 p.set(dataEl.toEmail, {
+
                   "email": dataEl.toEmail,
+
                   "cntOut": 0,
                   "cntIn": 0,
                   "linkIn": new Array(),
@@ -684,6 +702,7 @@
             // console.log(map);       // Debug
             // console.log("bilink begin for: ");    // Debug
             for (const d of root.leaves()) {
+
               // group by toEmail (to reduce the drawn edges if there is several mails between nodes)
               var mapMailOut = d3.rollup(d.data[1].mailOut, v => v.length, d => d.toEmail)
               var aMailOut = Array.from(mapMailOut.keys());
@@ -694,6 +713,7 @@
             }            
 
             // generates the links in
+
             for (const d of root.leaves()) {
               for (const o of d.data[1].linkOut) {
                 // console.log(o);     // Debug
@@ -839,7 +859,7 @@
       var output = document.getElementById("demo");
       output.innerHTML = slider.value;
 
-      slider.oninput = function() {
+      slider.oninput = function () {
         output.innerHTML = this.value;
       }
     </script>
@@ -847,10 +867,6 @@
   </div>
 
   <div id="visual"></div>
-
-  <script>
-  </script>
-
 
 </body>
 
