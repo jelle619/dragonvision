@@ -8,8 +8,7 @@
   <title>Dragon Vision — Visualisation 1</title>
   <link rel="icon" href="/media/dragonhead.png"> <!-- favicon -->
   <link rel="stylesheet" type="text/css" href="css/global.css" media="screen" /> <!-- import global stylesheet -->
-  <link rel="stylesheet" type="text/css" href="css/visualisation1.css" media="screen" />
-  <!-- import local stylesheet -->
+  <link rel="stylesheet" type="text/css" href="css/visualisation1.css" media="screen" /> <!-- import local stylesheet -->
   <script src="https://d3js.org/d3.v6.min.js"></script> <!-- import D3.js, version 6 -->
   <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script> <!-- import Papa Parse, version 5 -->
 </head>
@@ -29,7 +28,9 @@
 
     <input type="file" id="input" accept=".csv"> <!-- HTML iput, user can select a file here. -->
 
+    <!--
     <p>To view the CSV input and JSON output, view the logs of the JavaScript console in your web browser.</p>
+    -->
 
     <script>
       document.getElementById('input').addEventListener('change', function selectedFileChanged() { // when the state of the HTML input changes (a file gets selected), this function will trigger
@@ -217,27 +218,29 @@
               this._.push(new Line(this._m, this._m = [x, y]));
             }
             bezierCurveTo(ax, ay, bx, by, x, y) {
-              this._.push(new BezierCurve(this._m, [ax, ay], [bx, by], this._m = [x, y]));
-            }
-            * split(k = 0) {
-              const n = this._.length;
-              const i = Math.floor(n / 2);
-              const j = Math.ceil(n / 2);
-              const a = new Path(this._.slice(0, i));
-              const b = new Path(this._.slice(j));
-              if (i !== j) {
-                const [ab, ba] = this._[i].split();
-                a._.push(ab);
-                b._.unshift(ba);
+
+                this._.push(new BezierCurve(this._m, [ax, ay], [bx, by], this._m = [x, y]));
               }
-              if (k > 1) {
-                yield* a.split(k - 1);
-                yield* b.split(k - 1);
-              } else {
-                yield a;
-                yield b;
+              * split(k = 0) {
+                const n = this._.length;
+                const i = Math.floor(n / 2);
+                const j = Math.ceil(n / 2);
+                const a = new Path(this._.slice(0, i));
+                const b = new Path(this._.slice(j));
+                if (i !== j) {
+                  const [ab, ba] = this._[i].split();
+                  a._.push(ab);
+                  b._.unshift(ba);
+                }
+                if (k > 1) {
+                  yield* a.split(k - 1);
+                  yield* b.split(k - 1);
+                } else {
+                  yield a;
+                  yield b;
+                }
               }
-            }
+
             toString() {
               return this._.join("");
             }
@@ -252,104 +255,102 @@
           // =====================================================
 
           // Initialize test data
-          /*          
-                    var maildata = [{
-                        "date": new Date('2000-08-13'),
-                        "fromId": 96,
-                        "fromEmail": "matthew.lenhart@enron.com",
-                        "fromJobtitle": "Employee",
-                        "toId": 77,
-                        "toEmail": "eric.bass@enron.com",
-                        "toJobtitle": "Trader",
-                        "messageType": "CC",
-                        "sentiment": 0.01369863
-                      },
-                      {
-                        "date": new Date('2001-11-22'),
-                        "fromId": 64,
-                        "fromEmail": "danny.mccarty@enron.com",
-                        "fromJobtitle": "Vice President",
-                        "toId": 121,
-                        "toEmail": "rod.hayslett@enron.com",
-                        "toJobtitle": "Vice President",
-                        "messageType": "TO",
-                        "sentiment": 0
-                      },
-                      {
-                        "date": new Date('2000-08-12'),
-                        "fromId": 64,
-                        "fromEmail": "danny.mccarty@enron.com",
-                        "fromJobtitle": "Vice President",
-                        "toId": 121,
-                        "toEmail": "rod.hayslett@enron.com",
-                        "toJobtitle": "Vice President",
-                        "messageType": "TO",
-                        "sentiment": 0
-                      }
-                    ];
-                    
-                    var empCnt = 150;
-                    for (var i = 0; i < empCnt; i++) {
-                      var jobFrom = "Employee";
-                      var jobTo = "Employee";
-                      var res = i % 3;
-                      if (res == 0) {
-                        jobFrom = "Trader"
-                      } else if (res == 1) {
-                        jobFrom = "Manager"
-                      }
-          
-                      res = (empCnt - i - 1) % 3;
-                      if (res == 0) {
-                        jobTo = "Trader"
-                      } else if (res == 1) {
-                        jobTo = "Manager"
-                      }
-          
-                      var m = {
-                        "date": new Date('2000-08-1' + i % 3),
-                        "fromId": i,
-                        "fromEmail": "mail" + i + "@enron.com",
-                        "fromJobtitle": jobFrom,
-                        "toId": i + 10,
-                        "toEmail": "mail" + (empCnt - i - 1) + "@enron.com",
-                        "toJobtitle": jobTo,
-                        "messageType": "CC",
-                        "sentiment": 0
-                      }
-                      maildata.push(m)
-          
-                      m = {
-                        "date": new Date('2000-08-1' + i % 3),
-                        "fromId": 64,
-                        "fromEmail": "danny.mccarty@enron.com",
-                        "fromJobtitle": "Vice President",
-                        "toId": i,
-                        "toEmail": "mail" + i + "@enron.com",
-                        "toJobtitle": jobFrom,
-                        "messageType": "CC",
-                        "sentiment": 0
-                      }
-                      maildata.push(m)
-                    }
-          
-                    //  Debug
-                    for (var i = 0; i < maildata.length; i++) {
-                      console.log("maildata[" + i + "]=" + maildata[i].fromJobtitle + ", " + maildata[i].fromEmail + ", " + maildata[i].toJobtitle + ", " + maildata[i].toEmail)
-                    }
-          */
 
-          // Initializing the real data
+/*          
+          var maildata = [{
+              "date": new Date('2000-08-13'),
+              "fromId": 96,
+              "fromEmail": "matthew.lenhart@enron.com",
+              "fromJobtitle": "Employee",
+              "toId": 77,
+              "toEmail": "eric.bass@enron.com",
+              "toJobtitle": "Trader",
+              "messageType": "CC",
+              "sentiment": 0.01369863
+            },
+            {
+              "date": new Date('2001-11-22'),
+              "fromId": 64,
+              "fromEmail": "danny.mccarty@enron.com",
+              "fromJobtitle": "Vice President",
+              "toId": 121,
+              "toEmail": "rod.hayslett@enron.com",
+              "toJobtitle": "Vice President",
+              "messageType": "TO",
+              "sentiment": 0
+            },
+            {
+              "date": new Date('2000-08-12'),
+              "fromId": 64,
+              "fromEmail": "danny.mccarty@enron.com",
+              "fromJobtitle": "Vice President",
+              "toId": 121,
+              "toEmail": "rod.hayslett@enron.com",
+              "toJobtitle": "Vice President",
+              "messageType": "TO",
+              "sentiment": 0
+            }
+          ];
+          
+          var empCnt = 150;
+          for (var i = 0; i < empCnt; i++) {
+            var jobFrom = "Employee";
+            var jobTo = "Employee";
+            var res = i % 3;
+            if (res == 0) {
+              jobFrom = "Trader"
+            } else if (res == 1) {
+              jobFrom = "Manager"
+            }
 
-          var maildata = results.data;
+            res = (empCnt - i - 1) % 3;
+            if (res == 0) {
+              jobTo = "Trader"
+            } else if (res == 1) {
+              jobTo = "Manager"
+            }
 
-          for (var i = 0; i < maildata.length; i++) {
-            maildata[i].date = new Date(maildata[i].date);
+            var m = {
+              "date": new Date('2000-08-1' + i % 3),
+              "fromId": i,
+              "fromEmail": "mail" + i + "@enron.com",
+              "fromJobtitle": jobFrom,
+              "toId": i + 10,
+              "toEmail": "mail" + (empCnt - i - 1) + "@enron.com",
+              "toJobtitle": jobTo,
+              "messageType": "CC",
+              "sentiment": 0
+            }
+            maildata.push(m)
+
+            m = {
+              "date": new Date('2000-08-1' + i % 3),
+              "fromId": 64,
+              "fromEmail": "danny.mccarty@enron.com",
+              "fromJobtitle": "Vice President",
+              "toId": i,
+              "toEmail": "mail" + i + "@enron.com",
+              "toJobtitle": jobFrom,
+              "messageType": "CC",
+              "sentiment": 0
+            }
+            maildata.push(m)
           }
-          console.log(new Date(maildata[0].date));
+
+          //  Debug
+          for (var i = 0; i < maildata.length; i++) {
+            console.log("maildata[" + i + "]=" + maildata[i].fromJobtitle + ", " + maildata[i].fromEmail + ", " + maildata[i].toJobtitle + ", " + maildata[i].toEmail)
+          }
+*/
+
+          // Initializing the real data          
+          var maildata = results.data;
+          // Convert .date from string to Date
+          for (var i=0; i < maildata.length; i++){
+            maildata[i].date = new Date(maildata[i].date);
+          }  
+
           console.log(maildata);  // Debug
-
-
 
           // Dimenstions
           const width = 954;
@@ -397,7 +398,8 @@
           var slider = document.getElementById("myRange");
           var output = document.getElementById("demo");
 
-          slider.oninput = function () {
+          slider.oninput = function() {
+
             output.innerHTML = arrSliderVal[slider.value];
             visualisation1(d3.select('input[name="rb"]:checked').node().value, mapSliderVal.get(arrSliderVal[slider.value]));
           }
@@ -416,7 +418,9 @@
           // Radio buttons initialization
           console.log(d3.selectAll('input[name="rb"]')); // Debug
           d3.selectAll('input[name="rb"]')
-            .on("input", function () {
+
+            .on("input", function() {
+
               console.log("On Input" + d3.select('input[name="rb"]:checked').node().value); // Debug
               var filterDateBy = d3.select('input[name="rb"]:checked').node().value;
               sliderInit(filterDateBy);
@@ -516,7 +520,9 @@
               .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
               .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
               .text(d => d.data[0])
-              .each(function (d) {
+
+              .each(function(d) {
+
                 d.htmlText = this;
               })
               .on("mouseover", overed)
@@ -552,7 +558,9 @@
               .style("mix-blend-mode", "overlay") // hue, color, overlay, normal
               .attr("stroke", (d, i) => color(d3.easeQuad(i / ((1 << k_csc) - 1))))
               .attr("d", d => d.join(""))
-              .each(function (d) {
+
+              .each(function(d) {
+
                 d.htmlPath = this;
               });
           }
@@ -564,7 +572,8 @@
             d3.selectAll(d.data[1].linkIn.map(d => d[0].htmlText)).attr("fill", colorin).attr("font-weight", "bold");
             d3.selectAll(d.data[1].linkOut.map(d => d[1].htmlText))
               .attr("fill",
-                function (d) {
+
+                function(d) {
                   return d3.select(this).attr("fill") == colorin ? colorinout : colorout;
                 }
               )
@@ -580,7 +589,9 @@
               .join("path")
               .style("mix-blend-mode", "multiply")
               .attr("d", ([i, o]) => line(i.path(o)))
-              .each(function (d) {
+
+              .each(function(d) {
+
                 d.htmlPath = this;
               });
 
@@ -589,7 +600,9 @@
               .join("path")
               .style("mix-blend-mode", "multiply")
               .attr("d", ([i, o]) => line(i.path(o)))
-              .each(function (d) {
+
+              .each(function(d) {
+
                 d.htmlPath = this;
               });
           }
@@ -648,8 +661,10 @@
               var q = p.get(dataEl.fromEmail);
               if (filterDateFn(dataEl.date)) {
                 q.cntOut += 1;
-                if (dataEl.fromEmail != dataEl.toEmail) {
-                  q.mailOut.push(dataEl);
+
+                if (dataEl.fromEmail != dataEl.toEmail){
+                  q.mailOut.push(dataEl); 
+
                 }
               }
 
@@ -661,7 +676,9 @@
               p = map.get(dataEl.toJobtitle);
               if (!p.has(dataEl.toEmail)) {
                 p.set(dataEl.toEmail, {
-                  "email": dataEl.fromEmail,
+
+                  "email": dataEl.toEmail,
+
                   "cntOut": 0,
                   "cntIn": 0,
                   "linkIn": new Array(),
@@ -685,10 +702,18 @@
             // console.log(map);       // Debug
             // console.log("bilink begin for: ");    // Debug
             for (const d of root.leaves()) {
-              d.data[1].linkOut = d.data[1].mailOut.map(i => [d, map.get(i.toEmail)]);
+
+              // group by toEmail (to reduce the drawn edges if there is several mails between nodes)
+              var mapMailOut = d3.rollup(d.data[1].mailOut, v => v.length, d => d.toEmail)
+              var aMailOut = Array.from(mapMailOut.keys());
+
+              // generate the links out
+              d.data[1].linkOut = aMailOut.map(i => [d, map.get(i)]);
               // console.log(d.data[1].linkOut);   // Debug
-            }
-            // console.log("bilink end for: ");    // Debug
+            }            
+
+            // generates the links in
+
             for (const d of root.leaves()) {
               for (const o of d.data[1].linkOut) {
                 // console.log(o);     // Debug
