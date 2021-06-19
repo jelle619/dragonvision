@@ -1,0 +1,14 @@
+#visual {
+    padding: 25px;
+    margin-left: 0;
+    margin-right: auto;
+    max-width: 900px;
+}
+
+@media (max-width: 900px) {
+    #enable-wide-wrapper {
+        display: none;
+        visibility: hidden;
+        opacity: 0;
+    }
+}
