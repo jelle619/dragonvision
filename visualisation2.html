@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- makes the website responsive -->
   <title>Dragon Vision — Visualisation 2</title>
   <link rel="icon" href="/media/dragonhead.png"> <!-- favicon -->
-  <link rel="stylesheet" type="text/css" href="styles/global.css" media="screen" /> <!-- import global stylesheet -->
+  <link rel="stylesheet" type="text/css" href="css/global.css" media="screen" /> <!-- import global stylesheet -->
   <script src="https://d3js.org/d3.v6.min.js"></script> <!-- import D3.js, version 6 -->
   <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script> <!-- import Papa Parse, version 5 -->
 </head>
@@ -23,9 +23,36 @@
 
   <div id='main'>
     <h1>Visualisation 2</h1>
+
     <p>IT'S ALIIIVE! 🔥🐲<br>The visual below is made using D3.</p>
 
     <input type="file" id="input" accept=".csv"> <!-- HTML iput, user can select a file here. -->
+
+    </div>
+
+    <div id="visual"></div>
+
+    <style>
+      svg.matrixdiagram {
+        font: 10px sans-serif;
+      }
+      svg.matrixdiagram .label {
+        fill: rgb(255, 255, 255);
+        font-size: 8px;
+        text-anchor: end;
+      }
+      svg.matrixdiagram .column .label {
+        text-anchor: start;
+      }
+      svg.matrixdiagram rect {
+        fill: #eee;
+        stroke: #d62333;
+        stroke-width: 0;
+      }
+      svg.matrixdiagram rect:hover {
+        stroke-width: 1px;
+      }
+    </style>
 
     <script>
       document.getElementById('input').addEventListener('change', function selectedFileChanged() { // when the state of the HTML input changes (a file gets selected), this function will trigger
@@ -78,77 +105,401 @@
 
         Papa.parse(file, {
           header: true,
-          complete: function(results) {
-            console.log("JSON output:", results);
-            data = results.data;
-          }
+          skipEmptyLines: true,
+          complete: (results) => visual(results)
         });
+      
+      function visual (results){  
+        document.getElementById("visual").innerHTML = ""; // clear the visual
+        // Test Data
+        /*
+        var maildata = [{
+                  "date": new Date('2000-08-13'),
+                  "fromId": 96,
+                  "fromEmail": "matthew.lenhart@enron.com",
+                  "fromJobtitle": "Employee",
+                  "toId": 77,
+                  "toEmail": "eric.bass@enron.com",
+                  "toJobtitle": "Trader",
+                  "messageType": "CC",
+                  "sentiment": 0.9
+                },
+                {
+                  "date": new Date('2001-11-22'),
+                  "fromId": 64,
+                  "fromEmail": "danny.mccarty@enron.com",
+                  "fromJobtitle": "Vice President",
+                  "toId": 121,
+                  "toEmail": "rod.hayslett@enron.com",
+                  "toJobtitle": "Vice President",
+                  "messageType": "TO",
+                  "sentiment": 0.5
+                },
+                {
+                  "date": new Date('2000-08-12'),
+                  "fromId": 64,
+                  "fromEmail": "danny.mccarty@enron.com",
+                  "fromJobtitle": "Vice President",
+                  "toId": 121,
+                  "toEmail": "rod.hayslett@enron.com",
+                  "toJobtitle": "Vice President",
+                  "messageType": "TO",
+                  "sentiment": 0.5
+                }
+              ];
+              
+              var empCnt = 150;
+              for (var i = 0; i < empCnt; i++) {
+                var jobFrom = "Employee";
+                var jobTo = "Employee";
+                var res = i % 3;
+                if (res == 0) {
+                  jobFrom = "Trader"
+                } else if (res == 1) {
+                  jobFrom = "Manager"
+                }
 
-      });
-    </script>
+                res = (empCnt - i - 1) % 3;
+                if (res == 0) {
+                  jobTo = "Trader"
+                } else if (res == 1) {
+                  jobTo = "Manager"
+                }
 
-    <div id="visual"></div>
+                var m = {
+                  "date": new Date('2000-08-1' + i % 3),
+                  "fromId": i,
+                  "fromEmail": "mail" + i + "@enron.com",
+                  "fromJobtitle": jobFrom,
+                  "toId": i + 10,
+                  "toEmail": "mail" + (empCnt - i - 1) + "@enron.com",
+                  "toJobtitle": jobTo,
+                  "messageType": "CC",
+                  "sentiment": -1 + (i%7)*0.3
+                }
+                maildata.push(m)
 
-    <script>
-      // create the svg area
-      var svg = d3.select("#visual")
-        .append("svg")
-        .attr("width", 440)
-        .attr("height", 440)
-        .append("g")
-        .attr("transform", "translate(220,220)")
+                m = {
+                  "date": new Date('2000-08-1' + i % 3),
+                  "fromId": 64,
+                  "fromEmail": "danny.mccarty@enron.com",
+                  "fromJobtitle": "Vice President",
+                  "toId": i,
+                  "toEmail": "mail" + i + "@enron.com",
+                  "toJobtitle": jobFrom,
+                  "messageType": "CC",
+                  "sentiment": -1 + (i%7)*0.3
+                }
+                maildata.push(m)
+              }
+            */
 
-      // create input data: a square matrix that provides flow between entities
-      var matrix = [
-        [11975, 5871, 8916, 2868],
-        [1951, 10048, 2060, 6171],
-        [8010, 16145, 8090, 8045],
-        [1013, 990, 940, 6907]
-      ];
+          // Initializing the real data          
+          var maildata = results.data;
+          // Convert .date from string to Date
+          for (var i=0; i < maildata.length; i++){
+            maildata[i].date = new Date(maildata[i].date);
+            maildata[i].sentiment = parseFloat(maildata[i].sentiment);
+          }  
+          
+          var mapEmail = generateMap(maildata, "All", true);
+          var arrEmailKeys = reorderKeys(mapEmail);
+          var matrixEmail = generateMatrix(mapEmail, arrEmailKeys);
+          
+          console.log(mapEmail); //Debug
+          console.log(matrixEmail); //Debug
+          console.log(matrixEmail[0,1]); //Debug
 
-      // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
-      var res = d3.chord()
-        .padAngle(0.05) // padding between entities (black arc)
-        .sortSubgroups(d3.descending)
-        (matrix)
+          var margin = {
+              top: 120,
+              right: 0,
+              bottom: 0,
+              left: 120
+            };
 
-      // add the groups on the inner part of the circle
-      svg
-        .datum(res)
-        .append("g")
-        .selectAll("g")
-        .data(function(d) {
-          return d.groups;
-        })
-        .enter()
-        .append("g")
-        .append("path")
-        .style("fill", "grey")
-        .style("stroke", "black")
-        .attr("d", d3.arc()
-          .innerRadius(200)
-          .outerRadius(210)
-        )
+          var width = 1700 - margin.left - margin.right;
+          var height = 1700 - margin.top - margin.bottom;
 
-      // Add the links between groups
-      svg
-        .datum(res)
-        .append("g")
-        .selectAll("path")
-        .data(function(d) {
-          return d;
-        })
-        .enter()
-        .append("path")
-        .attr("d", d3.ribbon()
-          .radius(200)
-        )
-        .style("fill", "#69b3a2")
-        .style("stroke", "black");
+          var opacity = d3.scalePow()
+            .domain([0, 50])
+            .range([0.15, 1])
+            .clamp(false);
+
+
+          
+          var x = d3.scaleBand()
+              .rangeRound([0, width])
+              .paddingInner(0.1)
+              .align(0);
+
+        x.domain(d3.range(mapEmail.size));
+
+          // Creating SVG element
+        var svgDOM = d3.select('#visual')
+          .append("svg")
+            .attr('class','matrixdiagram')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "8");
+        //  .attr("width", 2000)
+        //  .attr("height", 2000)
+        var svg = svgDOM.append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')'); 
+
+        // Creating Rectangle
+        /*
+        svg.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "red")
+        */
+
+        var row = svg.selectAll('g.row')
+          .data(matrixEmail)
+          .enter().append('g')
+          .attr('class', 'row')
+          .attr('transform', function (d, i) { 
+            return 'translate(0,' + x(i) + ')'; 
+          })
+          .each(makeRow);
+
+        row.append('text')
+          .attr('class', 'label')
+          .attr('x', -4)
+          .attr('y', x.bandwidth() / 2)
+          .attr('dy', '0.32em')
+          .attr('fill', 'white')
+          .text(function (d, i) { 
+            //console.log(d);
+            return mapEmail.get(arrEmailKeys[i]).email; 
+          })
+          .call(text => text.append("title")
+            .text((d,i) => "job  : " + mapEmail.get(arrEmailKeys[i]).jobTitle + "\n" +
+              "mail : " + mapEmail.get(arrEmailKeys[i]).email + "\n" +
+              "outgoing : " + mapEmail.get(arrEmailKeys[i]).cntOut + "\n" +
+              "incoming : " + mapEmail.get(arrEmailKeys[i]).cntIn + "\n"
+
+            ));
+
+        var column = svg.selectAll('g.column')
+          .data(mapEmail)
+          .enter().append('g')
+          .attr('class', 'column')
+          .attr('transform', function(d, i) { return 'translate(' + x(i) + ', 0)rotate(-90)'; })
+        .append('text')
+          .attr('class', 'label')
+          .attr('x', 4)
+          .attr('y', x.bandwidth() / 2)
+          .attr('dy', '0.32em')
+          .attr('fill', 'white')
+          .text(function (d, i) { 
+            return d[1].email; 
+          
+          })
+          .call(text => text.append("title")
+            .text((d,i) => "job  : " + mapEmail.get(arrEmailKeys[i]).jobTitle + "\n" +
+              "mail : " + mapEmail.get(arrEmailKeys[i]).email + "\n" +
+              "outgoing : " + mapEmail.get(arrEmailKeys[i]).cntOut + "\n" +
+              "incoming : " + mapEmail.get(arrEmailKeys[i]).cntIn + "\n"
+
+            ));
+
+        function makeRow(rowData) {
+          var cell = d3.select(this).selectAll('rect')
+            .data(rowData)
+            .enter().append('rect')
+            .attr('x', function (d, i) { return x(i); })
+            .attr('width', x.bandwidth())
+            .attr('height', x.bandwidth())
+            .style('fill-opacity', function (d) { return opacity(d.cntOut); })
+            .style('fill', function (d) {
+                if (d.cntOut != 0){
+                  return getSentimentColor(d.sentiment/d.cntOut); 
+                } 
+                return 'White';
+              })
+            /*
+            .on('mouseover', function (d) {
+              row.filter(function (_, i) { return d.i === i; })
+                .selectAll('text')
+                .style('fill', '#d62333')
+                .style('font-weight', 'bold');
+              column.filter(function (_, j) { return d.j === j; })
+                .style('fill', '#d62333')
+                .style('font-weight', 'bold');
+            })
+            .on('mouseout', function () {
+              row.selectAll('text')
+                .style('fill', null)
+                .style('font-weight', null);
+              column
+                .style('fill', null)
+                .style('font-weight', null);
+            })*/
+          ;
+          
+
+          cell.append('title')
+            .text ((d,i) => { 
+              var avgS = 0;
+              if (d.cntOut != 0){
+                avgS = d.sentiment/d.cntOut; 
+              };
+              return "outgoing : " + d.cntOut + "\n" + 
+                    "avg sentiment : " + avgS + "\n"
+            }
+          );
+          
+        }
+
+        // Transform Data
+        function generateMap(data, filterDateBy = "All", dateFilter) {
+
+          var filterDateFn;
+          switch (filterDateBy) {
+            case "All":
+              filterDateFn = date => true;
+              break;
+            case "Year":
+              filterDateFn = date => (date.getFullYear() == dateFilter.getFullYear());
+              break;
+            case "Month":
+              filterDateFn = date => (date.getFullYear() == (dateFilter.getFullYear()) && (date.getMonth() + 1) == (dateFilter.getMonth() + 1));
+              break;
+            case "Day":
+              filterDateFn = date => (date.getFullYear() == (dateFilter.getFullYear()) && (date.getMonth() + 1) == (dateFilter.getMonth() + 1) && date.getDate() == dateFilter.getDate());
+              break;
+
+          }
+
+            // Transforms array of objects data (maildata) into map
+          var map = new Map;
+          data.forEach(function find(dataEl) {
+            // Add from
+            
+            if (!map.has(dataEl.fromEmail)) {
+              map.set(dataEl.fromEmail, {
+                "email": dataEl.fromEmail,
+                "index": 0,
+                "jobTitle": dataEl.fromJobtitle,
+                "cntOut": 0,
+                "cntIn": 0,
+                "linkIn": new Array(),
+                "linkOut": new Array(),
+                "mailOut": new Array()
+              })
+            }
+
+            var q = map.get(dataEl.fromEmail);
+            if (filterDateFn(dataEl.date)) {
+              q.cntOut += 1;
+              q.mailOut.push(dataEl); 
+            }
+
+            // Add to
+
+            if (!map.has(dataEl.toEmail)) {
+              map.set(dataEl.toEmail, {
+                "email": dataEl.toEmail,
+                "index": 0,
+                "jobTitle": dataEl.toJobtitle,
+                "cntOut": 0,
+                "cntIn": 0,
+                "linkIn": new Array(),
+                "linkOut": new Array(),
+                "mailOut": new Array()
+              })
+            }
+
+            q = map.get(dataEl.toEmail);
+            if (filterDateFn(dataEl.date)) {
+              q.cntIn += 1;
+            }
+          });
+
+          return map;
+        }
+
+        function reorderKeys(map){
+          var arrKeys = Array.from(map.keys());
+          for (var i=0; i<arrKeys.length; i++){
+            map.get(arrKeys[i]).index = i;
+          }
+          return arrKeys;
+        }
+
+        function generateMatrix(map, arrKeys){
+          var matrix = new Array(map.size);
+          for(var i = 0; i<arrKeys.length; i++){
+            matrix[i] = new Array(map.size);
+            for (var j = 0; j<arrKeys.length; j++){
+              var el = {
+                "cntOut": 0,
+                "sentiment": 0
+              };
+              matrix[i][j] = el;
+            }
+            var el = map.get(arrKeys[i]);        
+            // DOES NOT WORK :(
+            for (var k = 0; k<el.mailOut.length; k++){
+              var elM = matrix[i][map.get(el.mailOut[k].toEmail).index];
+              elM.cntOut += 1;
+              elM.sentiment += el.mailOut[k].sentiment;
+            }        
+          }
+
+          return matrix;
+        }
+
+        function getSentimentColor(sent){
+          // Old Version
+          /*
+          if (-1 <= sent && sent < -0.75){
+            return 'BlueViolet';
+          } else if (-0.75 <= sent && sent < -0.45){
+            return 'DodgerBlue';
+          } else if (-0.45 <= sent && sent < -0.15){
+            return 'MediumSpringGreen';
+          } else if (-0.15 <= sent && sent < 0.15){
+            return 'White';
+          } else if (0.15 <= sent && sent < 0.45){
+            return 'Gold';
+          } else if (0.45 <= sent && sent < 0.75){
+            return 'OrangeRed';
+          } else{
+            return 'DarkRed';
+          }
+          */
+         
+          // New Version
+          if (-1 <= sent && sent < -0.05){
+            return 'BlueViolet';
+          } else if (-0.05 <= sent && sent < -0.02){
+            return 'DodgerBlue';
+          } else if (-0.02 <= sent && sent < -0.005){
+            return 'MediumSpringGreen';
+          } else if (-0.005 <= sent && sent < 0.005){
+            return 'White';
+          } else if (0.005 <= sent && sent < 0.02){
+            return 'Gold';
+          } else if (0.02 <= sent && sent < 0.05){
+            return 'OrangeRed';
+          } else{
+            return 'DarkRed';
+          }
+
+        } 
+      } 
+      
+    });
     </script>
   </div>
 
-  <script type="text/javascript" src="scripts/global.js"></script> <!-- import JavaScript -->
+  <script type="text/javascript" src="script.js"></script> <!-- import JavaScript -->
+
 </body>
 
 </html>
