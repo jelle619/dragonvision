@@ -11,7 +11,7 @@
     <!-- favicon -->
     <link rel="stylesheet" type="text/css" href="styles/global.css" media="screen" />
     <!-- import global stylesheet -->
-    <link rel="stylesheet" type="text/css" href="styles/visualisation1.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="styles/visualisationall.css" media="screen" />
     <!-- import page-specific stylesheet-->
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <!-- import D3.js, version 6 -->
@@ -29,14 +29,14 @@
     </div>
 
     <div id='main'>
-        <h1>Visualisation 1</h1>
-        <p>A powerful, yet gorgeous visualisation.</p>
+        <h1>All Visualisations</h1>
+        <p>Powerful, yet gorgeous visualisations.</p>
 
         <input type="file" id="input" accept=".csv">
         <!-- HTML input, user can select a file here. -->
 
 
-        <p>A sample CSV can be downloaded here: <a href="/data/enron_full.csv">full</a> or <a href="/data/enron_sample.csv">a sample</a>.</p>
+        <p>A sample CSV can be downloaded here: <a href="/data/enron_full.csv">full</a> or <a href="/data/enron_sample.csv">small</a>.</p>
 
         <script type="text/javascript" src="scripts/visualisation1.js"></script>
         <!-- import JavaScript for the visualisation -->
@@ -166,20 +166,20 @@
 
         <div id="enable-wide-wrapper">
             <input type="checkbox" id="enable-wide" name="enable-wide" value="enable-wide" onclick="toggleWide()">
-            <label for="enable-wide">Render visualisation extra wide</label><br>
+            <label for="enable-wide">Render visualisations extra wide</label><br>
         </div><br>
 
         <script>
             function toggleWide() {
 
                 if (document.getElementById("enable-wide").checked == true) {
-                    document.getElementById("visual").setAttribute("style", "padding: 25px; margin-left: auto; margin-right: auto; max-width: 1800px;");
+                    document.getElementById("visuals-wrapper").setAttribute("style", "padding: 25px; margin-left: auto; margin-right: auto; max-width: 1800px;");
                 } else {
-                    document.getElementById("visual").setAttribute("style", "padding: 25px; margin-left: auto; margin-right: auto; max-width: 900px;");
+                    document.getElementById("visuals-wrapper").setAttribute("style", "padding: 25px; margin-left: auto; margin-right: auto; max-width: 900px;");
                 }
             }
 
-            document.getElementById("enable-wide").checked = false;
+            document.getElementById("enable-wide").checked = true;
         </script>
 
         <div id='rect'></div>
@@ -197,8 +197,10 @@
 
     </div>
 
-    <div id="visual"></div>
-    <!-- This is where the visualisation will be rendered -->
+    <div id="visuals-wrapper">
+        <img src="https://images.photowall.com/products/74785/black-dragon-at-beach.jpg?h=699&q=85" width="75vh" height="75vh"></img>
+        <img src="https://images.photowall.com/products/74785/black-dragon-at-beach.jpg?h=699&q=85" width="75vh" height="75vh"></img>
+    </div>
 
     <script type="text/javascript" src="scripts/global.js"></script>
     <!-- import JavaScript -->
