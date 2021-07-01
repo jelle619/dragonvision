@@ -4,53 +4,27 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- makes the website responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <!-- makes the website responsive -->
     <title>Dragon Vision — Visualisation 1</title>
-    <link rel="icon" href="/media/dragonhead.png">
-    <!-- favicon -->
-    <link rel="stylesheet" type="text/css" href="styles/global.css" media="screen" />
-    <!-- import global stylesheet -->
-    <link rel="stylesheet" type="text/css" href="styles/visualisationall.css" media="screen" />
-    <!-- import page-specific stylesheet-->
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <!-- import D3.js, version 6 -->
-    <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
-    <!-- import Papa Parse, version 5 -->
+    <link rel="icon" href="./media/dragonhead.png">    <!-- favicon -->
+    <link rel="stylesheet" type="text/css" href="styles/global.css" media="screen" />    <!-- import global stylesheet -->
+    <link rel="stylesheet" type="text/css" href="styles/visualisationall.css" media="screen" />    <!-- import page-specific stylesheet-->
+    <script src="https://d3js.org/d3.v6.min.js"></script>      <!-- import D3.js, version 6 -->
+    <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>    <!-- import Papa Parse, version 5 -->
 </head>
 
 <body>
 
-    <div id='nav'>
-        <a href="index.html">Homepage</a>
-        <a href="visualisation1.html">Visualisation 1</a>
-        <a href="visualisation2.html">Visualisation 2</a>
-        <a href="credits.html">Credits</a>
-    </div>
+  <div id='nav'>
+      <a href="index.html">Homepage</a>
+      <a href="visualisation1.html">Chord Diagram</a>
+      <a href="visualisation2.html">Adjacency Matrix</a>
+      <a href="visualisationall.html">All Visualisations</a>
+      <a href="credits.html">Credits</a>
+  </div>
 
     <div id='main'>
         <h1>All Visualisations</h1>
-        <p>Powerful, yet gorgeous visualisations.</p>
-
-        <input type="file" id="input" accept=".csv">
-        <!-- HTML input, user can select a file here. -->
-
-
-        <p>A sample CSV can be downloaded here: <a href="/data/enron_full.csv">full</a> or <a href="/data/enron_sample.csv">small</a>.</p>
-
-        <script type="text/javascript" src="scripts/visualisation1.js"></script>
-        <!-- import JavaScript for the visualisation -->
-
-        <div class="group" id="filterDateBy">
-            <input type="radio" name="rb" id="rb1" value="All" />
-            <label for="rb1">All</label>
-            <input type="radio" name="rb" id="rb2" value="Year" />
-            <label for="rb2">Year</label>
-            <input type="radio" name="rb" id="rb3" value="Month" />
-            <label for="rb3">Month</label>
-            <input type="radio" name="rb" id="rb4" value="Day" checked/>
-            <label for="rb4">Day</label>
-        </div>
 
         <style>
             .group {
@@ -59,14 +33,14 @@
                 margin-bottom: 2em;
                 color: white;
             }
-            
+
             input[type="checkbox"],
             input[type="radio"] {
                 position: absolute;
                 opacity: 0;
                 z-index: -1;
             }
-            
+
             label {
                 position: relative;
                 margin-right: 1em;
@@ -75,8 +49,8 @@
                 line-height: 2;
                 cursor: pointer;
             }
-            
-            label:before {
+
+            label[class="check_box_label"]:before {
                 box-sizing: border-box;
                 content: " ";
                 position: absolute;
@@ -89,18 +63,18 @@
                 border-radius: 0.25em;
                 z-index: -1;
             }
-            
+
             input[type="radio"]+label::before {
                 border-radius: 1em;
             }
             /* Checked */
-            
+
             input[type="checkbox"]:checked+label,
             input[type="radio"]:checked+label {
                 padding-left: 1em;
                 color: #8e44ad;
             }
-            
+
             input[type="checkbox"]:checked+label:before,
             input[type="radio"]:checked+label:before {
                 top: 0;
@@ -109,7 +83,7 @@
                 background: white;
             }
             /* Transition */
-            
+
             label,
             label::before {
                 -webkit-transition: 0.25s all ease;
@@ -123,7 +97,7 @@
             .slidecontainer {
                 width: 100%;
             }
-            
+
             .slider {
                 -webkit-appearance: none;
                 width: 100%;
@@ -135,11 +109,11 @@
                 -webkit-transition: .2s;
                 transition: opacity .2s;
             }
-            
+
             .slider:hover {
                 opacity: 1;
             }
-            
+
             .slider::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 appearance: none;
@@ -149,7 +123,7 @@
                 background: url('./media/dragonhead.png');
                 cursor: pointer;
             }
-            
+
             .slider::-moz-range-thumb {
                 width: 32px;
                 height: 32px;
@@ -159,51 +133,125 @@
             }
         </style>
 
-        <div class="slidecontainer" id="sliderDiv">
-            <input type="range" min=0 max=100 value=0 class="slider" id="myRange">
-            <p>Value: <span id="demo"></span></p>
-        </div>
+        <style>
+            svg.matrixdiagram {
+                font: 10px sans-serif;
+            }
 
-        <div id="enable-wide-wrapper">
+            svg.matrixdiagram .label {
+                fill: rgb(255, 255, 255);
+                font-size: 8px;
+                text-anchor: end;
+            }
+
+            svg.matrixdiagram .column .label {
+                text-anchor: start;
+            }
+
+            svg.matrixdiagram rect {
+                fill: #eee;
+                stroke: #d62333;
+                stroke-width: 0;
+            }
+
+            svg.matrixdiagram rect:hover {
+                stroke-width: 1px;
+            }
+        </style>
+
+        <input type="file" id="input" accept=".csv">
+        <br>
+
+        <p>A sample CSV can be downloaded here: <a href="/data/enron_full.csv">full</a> or <a href="/data/enron_sample.csv">a sample</a>.</p>
+        <br>
+
+        <div class="group" id="filterDateBy">
+               <input type="radio" name="rb" id="rb1" value="All" />
+               <label class="check_box_label" for="rb1">All</label>
+               <input type="radio" name="rb" id="rb2" value="Year" />
+               <label class="check_box_label" for="rb2">Year</label>
+               <input type="radio" name="rb" id="rb3" value="Month" />
+               <label class="check_box_label" for="rb3">Month</label>
+               <input type="radio" name="rb" id="rb4" value="Day" checked/>
+               <label class="check_box_label" for="rb4">Day</label>
+       </div>
+
+       <div class="slidecontainer" >
+           <div class="slidecontainer" id="sliderDiv">
+               <input type="range" min=0 max=100 value=0 class="slider" id="myRange">
+               <p><span id="demo"></span></p>
+           </div>
+       </div>
+
+        <div>
+            <label style="padding: 0;" for="filterFromJob">Mails Sent By:</label>
+            <select name="filterFromJob" id="filterFromJob">
+                <option value="All">All</option>
+            </select>
+
+            <label style="padding-right: 0; padding-left: 1em;" for="colorBy">Color By:</label>
+            <select name="colorBy" id="colorBy">
+                <option value="sentiment">Sentiment</option>
+                <option value="fromJob">From Job</option>
+                <option value="toJob">To Job</option>
+            </select>
+
+            <br><br>
+
             <input type="checkbox" id="enable-wide" name="enable-wide" value="enable-wide" onclick="toggleWide()">
-            <label for="enable-wide">Render visualisations extra wide</label><br>
-        </div><br>
+            <label class="check_box_label" for="enable-wide">Render visualisations extra wide</label>
+        </div>
 
         <script>
             function toggleWide() {
 
                 if (document.getElementById("enable-wide").checked == true) {
-                    document.getElementById("visuals-wrapper").setAttribute("style", "padding: 25px; margin-left: auto; margin-right: auto; max-width: 1800px;");
+                    document.getElementById("visuals-wrapper").setAttribute("style", "display: block; height: 192vw; width: 96vw");
+                    document.getElementById("visual1").setAttribute("style", "height: 46%; width: 92%;");
+                    document.getElementById("visual2").setAttribute("style", "height: 46%; width: 92%;");
                 } else {
-                    document.getElementById("visuals-wrapper").setAttribute("style", "padding: 25px; margin-left: auto; margin-right: auto; max-width: 900px;");
+                    document.getElementById("visuals-wrapper").setAttribute("style", "display: flex; height: 48vw; width: 96vw");
+                    document.getElementById("visual1").setAttribute("style", "height: 92%; width: 46%;");
+                    document.getElementById("visual2").setAttribute("style", "height: 92%; width: 46%;");
+
                 }
             }
 
-            document.getElementById("enable-wide").checked = true;
+            document.getElementById("enable-wide").checked = false;
         </script>
 
-        <div id='rect'></div>
-        <!-- Making rectangles for the legend -->
+    </div>
 
-        <script>
-            var slider = document.getElementById("myRange");
-            var output = document.getElementById("demo");
-            output.innerHTML = slider.value;
-
-            slider.oninput = function() {
-                output.innerHTML = this.value;
-            }
-        </script>
-
+    <div id="legends-wrapper">
+        <!-- Legend 1 -->
+        <svg id="legend_h"></svg>
+        <!-- Legend 2 -->
+        <svg id="legend"></svg>
     </div>
 
     <div id="visuals-wrapper">
-        <img src="https://images.photowall.com/products/74785/black-dragon-at-beach.jpg?h=699&q=85" width="75vh" height="75vh"></img>
-        <img src="https://images.photowall.com/products/74785/black-dragon-at-beach.jpg?h=699&q=85" width="75vh" height="75vh"></img>
+        <div id="visual1"></div>
+        <div id="visual2"></div>
     </div>
 
-    <script type="text/javascript" src="scripts/global.js"></script>
+
+
     <!-- import JavaScript -->
+    <script type="text/javascript" src="scripts/global.js"></script>
+
+    <!-- import JavaScripts for the visualisation -->
+    <script type="text/javascript" src="scripts/hierarchical_edge_bundling.js"></script>
+    <script type="text/javascript" src="scripts/import_csv.js"></script>
+    <script type="text/javascript" src="scripts/visualisation_global.js"></script>
+    <script type="text/javascript" src="scripts/visualisation1.js"></script>
+    <script type="text/javascript" src="scripts/visualisation2.js"></script>
+    <script type="text/javascript" src="scripts/visualisationall.js"></script>
+    <script>
+        document.getElementById('input').addEventListener('change', function() {
+            selectedFileChanged(this, dataLoadedAll);
+        });
+
+    </script>
 </body>
 
 </html>

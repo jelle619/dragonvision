@@ -1,5 +1,5 @@
 body {
-  background-image: url('/media/splash.jpg');
+  background-image: url('../media/splash.jpg');
   background-size: cover;
   background-attachment: fixed;
   background-repeat: no-repeat;
