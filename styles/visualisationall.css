@@ -7,14 +7,14 @@
 }
 
 #visual2 {
-    padding: 25px; 
+    padding: 25px;
     max-width: 1800px;
     margin-right: auto;
     height: 92%;
     width: 46%;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
     #enable-wide-wrapper {
         display: none;
         visibility: hidden;
@@ -22,7 +22,7 @@
     }
 }
 
-#visuals-wrapper {    
+#visuals-wrapper {
     margin-left: auto;
     margin-right: auto;
     max-width: 1800px;
@@ -35,7 +35,7 @@
 #visuals-wrapper * {
     justify-content: center;
     flex-shrink: 0;
-    display: block;  
+    display: block;
     padding: 20px;
     color: white;
 }
