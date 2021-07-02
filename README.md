@@ -14,4 +14,4 @@ This is the recommended way of using our web application. You can visit our inst
 It is recommended to place the files on the root of a web server. Then, simply access the `index.html` page from a web browser! 
 
 ### Locally
-You can also open `index.html` locally. However, currently, it is known some images and graphics may not load when using the web app this way.
+You can also open `index.html` locally. However, some images and graphics may not load when using the web app this way.
